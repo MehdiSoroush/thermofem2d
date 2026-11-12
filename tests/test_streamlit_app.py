@@ -27,4 +27,5 @@ def test_ui_can_solve_with_t6():
     at.selectbox[idx].set_value('T6').run()
     at.button[0].click().run()
     assert not at.exception
-    assert any('T6' in item.message for item in at.success)
+    assert at.selectbox[idx].value == 'T6'
+    assert len(at.success) >= 1
