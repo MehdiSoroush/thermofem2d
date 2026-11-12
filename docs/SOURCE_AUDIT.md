@@ -21,9 +21,9 @@ Original Persian report: *Finite Element Methods coursework project: Thermoelast
 4. Historical tractions and thermal boundary conditions are not sufficiently specified by the surviving final script fragment for an exact run.
 5. The thermomechanical feedback term in the temperature equation cannot be considered reproduced by a sequential thermal-then-mechanical solver.
 
-## Explicit scope of v0.1.1
+## Explicit scope of v0.2.0
 
-A clean T3 mesh, Fourier conductivity/capacity matrices, steady/transient heat equation, and one-way quasi-static plane-stress thermal loading have been implemented. The current example boundary conditions and heating history are **new demonstration inputs** chosen to produce a testable baseline; they are not recovered 2016 cases. No claim of experimental or Abaqus validation is made.
+The solver now supports conforming T3 and straight-sided quadratic T6 elements, Fourier conductivity/capacity matrices, a steady/transient heat equation, and one-way quasi-static plane-stress thermal loading. **The T6 elements are newly derived one-way 2026 implementations, not the coupled 18-field-dof original formulation.** The current example boundary conditions and heating history are **new demonstration inputs** chosen to produce a testable baseline; they are not recovered 2016 cases. No claim of experimental or Abaqus validation is made.
 
 ## Source material handling
 

@@ -28,14 +28,16 @@ jobs:
       - name: Reproduce figures and numerical data
         run: |
           python -m thermofem2d.cli --config examples/steady_plate.json --out results
+          python -m thermofem2d.cli --config examples/steady_plate_t6.json --out results-t6
           python -m thermofem2d.cli --config examples/offset_hole_transient.json --out results-offset
           python examples/scripts/mesh_study.py
           python examples/scripts/verify_manufactured.py
+          python examples/scripts/compare_elements.py
       - name: Commit generated results to main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add results results-offset
+          git add results results-offset results-t6
           if ! git diff --cached --quiet; then
             git commit -m "results: publish reproducible simulation outputs [skip ci]"
             git push origin HEAD:main

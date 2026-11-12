@@ -5,6 +5,7 @@ import numpy as np
 from .solve import solve_model
 from .plot import make_figures
 from .fem import element_heat_flux
+from .element import element_type_for_mesh
 
 
 def main(argv=None):
@@ -24,16 +25,16 @@ def main(argv=None):
                np.column_stack((sol.sigma,sol.von_mises)),
                delimiter=",",header="sigma_xx_Pa,sigma_yy_Pa,tau_xy_Pa,von_mises_Pa",comments="")
     flux = element_heat_flux(sol.mesh, config["material"], sol.temperature)
-    centroids = sol.mesh.nodes[sol.mesh.elements].mean(axis=1)
+    centroids = sol.mesh.nodes[sol.mesh.elements[:,:3]].mean(axis=1)
     np.savetxt(out/"data"/"element_heat_flux.csv",
                np.column_stack((centroids, flux)),
                delimiter=",",header="centroid_x_m,centroid_y_m,heat_flux_x_W_per_m2,heat_flux_y_W_per_m2",comments="")
     nodes=sol.mesh.nodes
-    tri=sol.mesh.elements
+    tri=sol.mesh.elements[:,:3]
     p0,p1,p2=nodes[tri[:,0]],nodes[tri[:,1]],nodes[tri[:,2]]
     material_area = 0.5 * np.sum((p1[:,0]-p0[:,0])*(p2[:,1]-p0[:,1]) - (p1[:,1]-p0[:,1])*(p2[:,0]-p0[:,0]))
-    summary={"version":"0.1.1","source_config":str(args.config),
-             "nodes":n,
+    summary={"version":"0.2.0","source_config":str(args.config),
+             "nodes":n,"element_type":element_type_for_mesh(sol.mesh),
              "plate_material_area_m2":float(material_area),
              "max_element_heat_flux_W_per_m2":float(np.linalg.norm(flux,axis=1).max()),"elements":len(sol.mesh.elements),
              "temperature_min_K":float(sol.temperature.min()),

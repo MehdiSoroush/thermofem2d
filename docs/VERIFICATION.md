@@ -1,8 +1,8 @@
-# Numerical verification and known limitations — 0.1.1
+# Numerical verification and known limitations — 0.2.0
 
 ## Current verification cases
 
-1. **Element orientation:** all T3 elements have positive area after orientation enforcement; boundary edges follow actual outer and inner faces.
+1. **Element orientation:** all T3 and T6 parent elements have positive area after orientation enforcement; boundary edges follow actual outer and inner faces.
 2. **Mesh geometry:** hole size and eccentricity can vary without editing the assembly code; cells remain outside the hole.
 3. **Conductivity nullspace:** a constant temperature vector yields numerical zero `K*1`, consistent with ∇T = 0.
 4. **Constant temperature:** uniform thermal boundary data produce uniform temperature to numerical roundoff.
@@ -26,25 +26,35 @@ Run `python -m pytest -q` to reproduce automated verification. A separate `pytho
 
 ## Validation gaps
 
-- Source-specific six-node coupled system and original MATLAB results are not recovered.
+- The source-specific fully coupled six-node/three-field system and original MATLAB results are not recovered; current T6 is a newly derived sequential formulation.
 - Independent reference solver comparison (e.g. separate FE code or analytically accessible nontrivial problem) remains outstanding.
 - Time-step and mesh-convergence studies are required for the nonuniform demonstration case.
-- A posteriori error estimates and high-order or curved elements are not yet implemented.
+- A posteriori error estimates, higher-order elements beyond T6, and curved-edge isoparametric geometry are not implemented.
 - Streamlit interface requires separate end-to-end runtime verification.
 - Contact, geometric/material nonlinearities, convection, thermal radiation, prescribed time-dependent BC functions, arbitrary holes and dynamic structural inertia are not available.
 
+
 ## Additional manufactured-solution verification (v0.1.1)
 
-These are **analytical continuum checks**, not a claim of independent Abaqus benchmark reproduction. The tests use the same custom T3 assembler, while the reference fields and differential equations are specified analytically.
+These are **analytical continuum checks**, not a claim of independent Abaqus
+benchmark reproduction. The tests use the same custom T3 assembler, while the
+reference fields and differential equations are specified analytically.
 
 ### Exact harmonic temperature field
 
-The function `T(x,y) = 320 + 4*x - 7*y` K satisfies `div(k grad T) = 0` for constant conductivity. We prescribe this exact temperature on **all** outer and hole-boundary nodes, including the interior hole boundary (which therefore is *not insulated* in this benchmark). T3 reproduces the linear field to numerical precision, and the elementwise heat flux must be `q = -k*[4,-7]`.
+The function `T(x,y) = 320 + 4*x - 7*y` K satisfies `div(k grad T) = 0` for
+constant conductivity. We prescribe this exact temperature on **all** outer
+and hole-boundary nodes, including the interior hole boundary (which therefore
+is *not insulated* in this benchmark). T3 reproduces the linear field to
+numerical precision, and the elementwise heat flux must be `q = -k*[4,-7]`.
 This checks both the 2D stiffness assembly and Fourier-flux recovery.
 
 ### Exact constant-strain mechanical patch
 
-With `T = T_ref`, we prescribe an affine displacement field for a nonzero constant strain vector `epsilon = [1e-4,-0.7e-4,0.35e-4]`. The solver reproduces the nodal displacements and element stresses against `D*epsilon` to numerical precision. The test includes a perforated plate.
+With `T = T_ref`, we prescribe an affine displacement field for a nonzero
+constant strain vector `epsilon = [1e-4,-0.7e-4,0.35e-4]`. The solver
+reproduces the nodal displacements and element stresses against
+`D*epsilon` to numerical precision. The test includes a perforated plate.
 
 ### Quadratic manufactured conduction benchmark
 
@@ -62,7 +72,10 @@ systematic reduction in numerical error is expected with refinement.
 | 12 | 624 | 1152 | 0.026540 |
 | 16 | 1088 | 2048 | 0.014637 |
 
-The observed error reduction is approximately **37.9×** from the first to last tested mesh. This is an error-norm convergence demonstration for one manufactured conduction problem, **not** a proof of convergence of local von Mises stress maxima in the original plate loading case.
+The observed error reduction is approximately **37.9×** from the first to
+last tested mesh. This is an error-norm convergence demonstration for one
+manufactured conduction problem, **not** a proof of convergence of local
+von Mises stress maxima in the original plate loading case.
 
 The values and plot are regenerated with:
 
@@ -85,4 +98,40 @@ establish temporal accuracy in the full nonuniform loading scenario.
 
 The core numerical tests and CLI/postprocessing smoke tests pass in the
 present local environment. The optional `tests/test_streamlit_app.py` is
-skipped when `streamlit` is unavailable; the GitHub Actions UI smoke test has passed on Ubuntu with Python 3.12. This establishes scripted interface initialization and one numerical solve, but not full browser/deployment validation.
+skipped when `streamlit` is unavailable; a dedicated GitHub Actions job is
+configured to install Streamlit and execute its UI smoke test **after the
+repository is published**. UI operation is therefore *not* counted among
+locally verified tests at this stage.
+
+
+## Quadratic T6 verification (v0.2.0)
+
+The T6 extension uses global midside-node sharing on conforming straight-sided
+triangles and a six-point degree-four integration rule. The following checks are
+implemented in `tests/test_t6.py`:
+
+- Kronecker-delta interpolation at all six local nodes, partition of unity,
+  and zero summed shape-function gradients.
+- Exactly one global midside node per topological mesh edge, with quadratic
+  edge boundary labels and correct constant integrated traction loads.
+- Symmetry and positive heat-capacity matrix; thermal stiffness constant-mode
+  nullspace.
+- Exact linear-displacement/constant-strain reproduction at integration
+  points and stress-free uniform thermal expansion under compatible restraints.
+- A **quadratic manufactured temperature** `T = 300 + x² + 2y²` with constant
+  volumetric source `Q = −6 k` and prescribed exact temperature on *all* inner
+  and outer boundary nodes. T6 reproduces the nodal field to numerical
+  tolerance while the T3 solution has nonzero discretization error.
+- Transient heat solution and centroid Fourier flux for an affine temperature;
+  complete CLI/plotting smoke tests.
+
+The comparative demonstration (not a source-data validation) is generated by
+`python examples/scripts/compare_elements.py`; it writes
+`results/verification/t3_t6_comparison.csv` and `.png`. The comparison varies
+mesh subdivisions for each family and reports thermal/mechanical degrees of
+freedom, maximum displacement, and **unconverged centroid stress maxima**.
+Higher-order interpolation is not automatically a guarantee of a converged
+peak stress, especially at corners and near mixed boundary constraints.
+
+All test data and comparison plots are newly computed for the 2026 model.
+The original 2016 coupled T6 problem has **not** been reproduced.

@@ -1,11 +1,11 @@
 cff-version: 1.2.0
-message: "If you use this numerical prototype, please cite the software and its version."
+message: "If you use these calculations, cite the software version and model configuration."
 type: software
-title: "ThermoFEM-2D: Parametric 2D Thermoelastic FEM Prototype"
-version: 0.1.1
-date-released: 2026-11-12
-license: MIT
+title: "ThermoFEM-2D: Parametric finite element analysis of perforated plates"
 authors:
   - family-names: Soroush
     given-names: Mehdi
-abstract: "A parametric perforated-plate finite element solver for steady/transient heat conduction and sequential plane-stress thermoelastic response."
+version: 0.2.0
+date-released: 2026-11-12
+license: MIT
+abstract: "Open Python research prototype for steady/transient heat conduction and one-way plane-stress thermoelasticity using T3 and affine T6 elements in plates with parametric rectangular holes, with numerical checks and visualizations."

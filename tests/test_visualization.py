@@ -19,7 +19,7 @@ def test_cli_writes_traceable_heat_flux_csv(tmp_path):
     from pathlib import Path
     input_path = Path(__file__).resolve().parents[1] / "examples" / "steady_plate.json"
     summary = main(["--config", str(input_path), "--out", str(output)])
-    assert summary["version"] == "0.1.1"
+    assert summary["version"] == "0.2.0"
     assert summary["plate_material_area_m2"] == 3.952
     q = np.loadtxt(output / "data" / "element_heat_flux.csv", skiprows=1, delimiter=",")
     assert q.shape == (summary["elements"], 4)
