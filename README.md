@@ -1,5 +1,7 @@
 # ThermoFEM-2D
 
+[![Numerical verification](https://github.com/MehdiSoroush/thermofem2d/actions/workflows/ci.yml/badge.svg)](https://github.com/MehdiSoroush/thermofem2d/actions/workflows/ci.yml)
+
 **Parametric finite element analysis of a perforated plate under thermal loading**
 
 > **v0.1.1 — documented numerical prototype, November 2026.** The current software solves steady or transient **heat conduction** and then a **one-way, quasi-static plane-stress thermoelastic problem**. It is **not yet** a fully coupled thermoelastic solver, and it is **not** an exact numerical reproduction of the 2016 coursework results.
@@ -47,7 +49,7 @@ python -m pip install -e ".[app]"
 streamlit run app.py
 ```
 
-**The Streamlit UI is an optional convenience, not the verification baseline.** The command-line solver and tests do not depend on Streamlit. A dedicated UI smoke test is included for GitHub Actions, but end-to-end Streamlit operation has not yet been verified in the present local environment.
+**The Streamlit UI is an optional convenience, not the verification baseline.** The command-line solver and tests do not depend on Streamlit. The Streamlit UI smoke test passed in GitHub Actions on Ubuntu/Python 3.12. A separate live deployment has not yet been assessed.
 
 ## Change the geometry and boundary conditions
 
