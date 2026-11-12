@@ -3,12 +3,12 @@
   "source_config": "examples/offset_hole_transient.json",
   "nodes": 960,
   "plate_material_area_m2": 3.8879999999999995,
-  "max_element_heat_flux_W_per_m2": 4633.970868536254,
+  "max_element_heat_flux_W_per_m2": 4633.970868535981,
   "elements": 1792,
   "temperature_min_K": 298.0,
   "temperature_max_K": 380.0,
-  "max_displacement_m": 0.001556301834684671,
-  "max_element_centroid_von_mises_Pa": 100762609.8521204,
+  "max_displacement_m": 0.001556301834684663,
+  "max_element_centroid_von_mises_Pa": 100762609.85212277,
   "analysis_type": "one-way thermal to quasi-static plane stress",
   "validation_status": "analytical and manufactured-solution tests; historical coupled model not reproduced"
 }

@@ -8,44 +8,44 @@
       "subdivisions": 3,
       "nodes": 48,
       "elements": 72,
-      "rms_free_node_error_K": 0.5541167139031332,
+      "rms_free_node_error_K": 0.5541167139031499,
       "max_nodal_error_K": 0.967062594614049
     },
     {
       "subdivisions": 4,
       "nodes": 80,
       "elements": 128,
-      "rms_free_node_error_K": 0.28715310665077554,
+      "rms_free_node_error_K": 0.28715310665078075,
       "max_nodal_error_K": 0.5875540657385727
     },
     {
       "subdivisions": 6,
       "nodes": 168,
       "elements": 288,
-      "rms_free_node_error_K": 0.1163781757596533,
+      "rms_free_node_error_K": 0.11637817575964679,
       "max_nodal_error_K": 0.2796218927755376
     },
     {
       "subdivisions": 8,
       "nodes": 288,
       "elements": 512,
-      "rms_free_node_error_K": 0.06243508072086302,
+      "rms_free_node_error_K": 0.06243508072083241,
       "max_nodal_error_K": 0.16246566749623526
     },
     {
       "subdivisions": 12,
       "nodes": 624,
       "elements": 1152,
-      "rms_free_node_error_K": 0.026540337801000954,
+      "rms_free_node_error_K": 0.026540337801004964,
       "max_nodal_error_K": 0.07301814761046899
     },
     {
       "subdivisions": 16,
       "nodes": 1088,
       "elements": 2048,
-      "rms_free_node_error_K": 0.014637072684399498,
+      "rms_free_node_error_K": 0.01463707268436675,
       "max_nodal_error_K": 0.04127106701082539
     }
   ],
-  "observed_rms_error_reduction": 37.85707196041477
+  "observed_rms_error_reduction": 37.85707196050061
 }
