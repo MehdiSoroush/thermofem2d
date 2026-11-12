@@ -85,7 +85,4 @@ establish temporal accuracy in the full nonuniform loading scenario.
 
 The core numerical tests and CLI/postprocessing smoke tests pass in the
 present local environment. The optional `tests/test_streamlit_app.py` is
-skipped when `streamlit` is unavailable; a dedicated GitHub Actions job is
-configured to install Streamlit and execute its UI smoke test **after the
-repository is published**. UI operation is therefore *not* counted among
-locally verified tests at this stage.
+skipped when `streamlit` is unavailable; the GitHub Actions UI smoke test has passed on Ubuntu with Python 3.12. This establishes scripted interface initialization and one numerical solve, but not full browser/deployment validation.
