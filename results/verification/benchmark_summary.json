@@ -1,0 +1,51 @@
+{
+  "verification": "analytical manufactured solution, not archival Abaqus",
+  "exact_temperature": "T(x,y)=320+12*(x^2+y^2) K",
+  "volumetric_source_W_per_m3": -2592.0,
+  "temperature_dirichlet_boundary": "all outer and hole boundaries",
+  "errors": [
+    {
+      "subdivisions": 3,
+      "nodes": 48,
+      "elements": 72,
+      "rms_free_node_error_K": 0.5541167139031332,
+      "max_nodal_error_K": 0.967062594614049
+    },
+    {
+      "subdivisions": 4,
+      "nodes": 80,
+      "elements": 128,
+      "rms_free_node_error_K": 0.28715310665077554,
+      "max_nodal_error_K": 0.5875540657385727
+    },
+    {
+      "subdivisions": 6,
+      "nodes": 168,
+      "elements": 288,
+      "rms_free_node_error_K": 0.1163781757596533,
+      "max_nodal_error_K": 0.2796218927755376
+    },
+    {
+      "subdivisions": 8,
+      "nodes": 288,
+      "elements": 512,
+      "rms_free_node_error_K": 0.06243508072086302,
+      "max_nodal_error_K": 0.16246566749623526
+    },
+    {
+      "subdivisions": 12,
+      "nodes": 624,
+      "elements": 1152,
+      "rms_free_node_error_K": 0.026540337801000954,
+      "max_nodal_error_K": 0.07301814761046899
+    },
+    {
+      "subdivisions": 16,
+      "nodes": 1088,
+      "elements": 2048,
+      "rms_free_node_error_K": 0.014637072684399498,
+      "max_nodal_error_K": 0.04127106701082539
+    }
+  ],
+  "observed_rms_error_reduction": 37.85707196041477
+}
