@@ -1,5 +1,13 @@
 # Change history
 
+## v0.3.0 — 12 November 2026
+
+- Added a monolithic **two-way coupled transient plane-stress** solver for T3 and T6.
+- Assembled a consistent mechanical mass and reciprocal thermal/mechanical matrices; implemented a combined Newmark average-acceleration and backward-Euler time integrator.
+- Added a reproducible coupled T6 case, transient field histories, heat and mechanical-response plots, and a Streamlit mode selector.
+- Added dedicated coupling/residual tests and documentation of the plane-stress reduction and historical-source distinctions.
+- Preserved the sequential thermal/quasi-static baseline; no historical MATLAB or Abaqus reproduction is claimed.
+
 ## v0.2.0 — 12 November 2026
 
 - Added conforming quadratic T6 elements with globally shared midside nodes,

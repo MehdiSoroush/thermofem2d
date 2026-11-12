@@ -28,3 +28,16 @@ The solver now supports conforming T3 and straight-sided quadratic T6 elements, 
 ## Source material handling
 
 The original Persian report and its incomplete MATLAB appendix remain private. Public files independently describe the mathematics, provenance, and computed results without reproducing the archival manuscript.
+
+
+## v0.3 distinction: source equations versus reconstructed software
+
+The archival manuscript's printed equations (21) and (22) are the classical
+momentum and heat equations, including inertia and thermoelastic strain-rate
+feedback, using the three-dimensional coefficient
+`beta=alpha*(3*lambda+2*mu)`. The present v0.3 solver assembles a *new*
+reduced **plane-stress** system using the corresponding reduced constitutive
+operator, a consistent mass matrix, and a monolithic Newmark/BE algorithm.
+The surviving source does not establish this numerical implementation,
+its timestep method, or its material heat-capacity reduction. Full historical
+T6 matrix and MATLAB numerical comparisons remain outstanding.

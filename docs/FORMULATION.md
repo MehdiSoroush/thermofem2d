@@ -1,4 +1,4 @@
-# Mathematical formulation — ThermoFEM-2D v0.2.0
+# Mathematical formulation — ThermoFEM-2D v0.3.0
 
 ## Domains and approximation
 
@@ -22,7 +22,7 @@ The finite element semidiscrete equation is:
 Steady state solves `K_T T = f`. Transient backward Euler solves
 `(C + Δt K_T) T^(n+1) = C T^n + Δt f^(n+1)` with strong Dirichlet elimination. Natural heat flux defaults to zero on unlabeled/unspecified surfaces.
 
-## Mechanical response (one-way only)
+## Sequential mechanical response (default one-way mode)
 
 Under small-strain plane stress:
 
@@ -38,7 +38,7 @@ The mechanical equilibrium is `K_u u = f_traction + f_thermal`, where:
 
 For T3, the gradient matrix B is constant per element. For T6, the element matrices and thermal loading are integrated over each triangle using a six-point degree-four Gauss rule, with a spatially varying B and quadratic temperature interpolation. See [T6 formulation](T6_ELEMENTS.md). Linear temperature interpolation gives exact integration of uniform-material thermal loading using the element mean temperature. Standard consistent line-edge traction loads are included for constant tractions.
 
-The mechanical step is **quasi-static** and does not contain mass `M * ü` or thermal strain-rate feedback `T_ref*beta*tr(εdot)`. Therefore the method is *not two-way coupled thermoelasticity* and does not reproduce the original classical dynamic formulation.
+The default sequential mechanical step is **quasi-static** and does not contain mass `M * ü` or thermal strain-rate feedback. An alternative **two-way coupled transient mode**, introduced in v0.3, includes both terms. For the complete new coupled mathematical formulation and its limitations, see [Coupled Dynamics](COUPLED_DYNAMICS.md). Neither mode reproduces the unavailable historical MATLAB results exactly.
 
 ## Derived outputs
 

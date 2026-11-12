@@ -94,13 +94,23 @@ def make_figures(s:Solution,outdir:str|Path)->list[Path]:
     ax.set_title(f"Deformation displayed ×{scale:.3g}")
     for ax in axes[1]:
         ax.set_aspect("equal");ax.set_xlabel("x [m]");ax.set_ylabel("y [m]")
-    fig.suptitle(f"ThermoFEM-2D v0.2.0 | {element_kind} computed fields and mesh")
+    fig.suptitle(f"ThermoFEM-2D v0.3.0 | {element_kind} computed fields and mesh")
     p=outdir/"overview.png";fig.savefig(p,dpi=180);plt.close(fig);output.append(p)
+    if s.displacement_history is not None:
+        fig, ax = plt.subplots(figsize=(9,5), layout="constrained")
+        amplitudes = np.linalg.norm(s.displacement_history.reshape(len(s.times),-1,2),axis=2)
+        ax.plot(s.times, amplitudes.max(axis=1)*1e3, lw=1.8)
+        ax.set(xlabel="Time [s]",ylabel="Maximum nodal |u| [mm]",
+               title="Transient mechanical response | Newmark average acceleration")
+        ax.grid(alpha=.2)
+        p=outdir/"mechanical_history.png";fig.savefig(p,dpi=180);plt.close(fig);output.append(p)
     if len(s.times)>1:
         fig,ax=plt.subplots(figsize=(9,5),layout="constrained")
         # Spatial mean of nodal temperatures (diagnostic, not mass-weighted).
-        ax.plot(s.times/3600,np.mean(s.temperature_history,axis=1),lw=2)
-        ax.set(xlabel="Time [h]",ylabel="Mean nodal temperature [K]",
+        ax.plot(s.times if s.displacement_history is not None else s.times/3600,
+                np.mean(s.temperature_history,axis=1),lw=2)
+        ax.set(xlabel="Time [s]" if s.displacement_history is not None else "Time [h]",
+               ylabel="Mean nodal temperature [K]",
                title="Transient thermal response | backward Euler")
         ax.grid(alpha=.2)
         p=outdir/"thermal_history.png";fig.savefig(p,dpi=180);plt.close(fig);output.append(p)

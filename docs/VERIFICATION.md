@@ -1,4 +1,4 @@
-# Numerical verification and known limitations — 0.2.0
+# Numerical verification and known limitations — 0.3.0
 
 ## Current verification cases
 
@@ -26,12 +26,12 @@ Run `python -m pytest -q` to reproduce automated verification. A separate `pytho
 
 ## Validation gaps
 
-- The source-specific fully coupled six-node/three-field system and original MATLAB results are not recovered; current T6 is a newly derived sequential formulation.
+- The original source-specific six-node/three-field matrices and historical numerical results are not recovered; v0.3 implements a **new** fully coupled plane-stress T3/T6 formulation.
 - Independent reference solver comparison (e.g. separate FE code or analytically accessible nontrivial problem) remains outstanding.
 - Time-step and mesh-convergence studies are required for the nonuniform demonstration case.
 - A posteriori error estimates, higher-order elements beyond T6, and curved-edge isoparametric geometry are not implemented.
 - Streamlit interface requires separate end-to-end runtime verification.
-- Contact, geometric/material nonlinearities, convection, thermal radiation, prescribed time-dependent BC functions, arbitrary holes and dynamic structural inertia are not available.
+- Contact, geometric/material nonlinearities, convection, thermal radiation, prescribed time-dependent boundary functions and arbitrary holes are not available. **Mechanical inertia is included in v0.3 coupled mode.**
 
 
 ## Additional manufactured-solution verification (v0.1.1)
@@ -135,3 +135,19 @@ peak stress, especially at corners and near mixed boundary constraints.
 
 All test data and comparison plots are newly computed for the 2026 model.
 The original 2016 coupled T6 problem has **not** been reproduced.
+
+
+## Two-way dynamic thermoelastic verification (v0.3)
+
+The additional tests check assembled mechanical mass symmetry/positive
+definiteness, reciprocal coupling `H=T_ref*G.T`, equivalence between
+`G*theta` and independently assembled thermal-expansion loading, rigid-body
+translation invariance, alpha-zero decoupling, reference thermal equilibrium,
+mechanical loading producing thermal feedback, and free-DOF equations of the
+monolithic Newmark/backward-Euler solve for **both T3 and T6**. An example
+reproducibly generates time histories and maps at
+`examples/coupled_plate_t6.json`. See [full formulation](COUPLED_DYNAMICS.md).
+
+These are **internal physics and algebraic checks**, not an external
+solver-to-solver numerical validation. Accuracy, mesh/time-step convergence,
+and historical 2016 model equivalence remain open.
