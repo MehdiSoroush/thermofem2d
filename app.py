@@ -7,11 +7,12 @@ import matplotlib.tri as mtri
 import numpy as np
 import streamlit as st
 from thermofem2d.solve import solve_model
+from thermofem2d.element import plotting_triangles,element_type_for_mesh
 
 st.set_page_config(page_title="ThermoFEM-2D | FEM laboratory", layout="wide")
 st.title("ThermoFEM-2D")
-st.caption("v0.1.1 • Parametric T3 plate-with-hole FEM • One-way thermal → plane-stress mechanical response")
-st.warning("Research prototype, not field validated. This release is not the historical fully coupled T6 model.")
+st.caption("v0.2.0 • Parametric T3/T6 plate-with-hole FEM • One-way thermal → plane-stress mechanical response")
+st.warning("Research prototype, not independently field validated. T6 here is a sequential thermal/plane-stress element, not the historical fully coupled 18-DOF model.")
 base=json.loads((Path(__file__).parent/"examples/steady_plate.json").read_text())
 config=copy.deepcopy(base)
 with st.sidebar:
@@ -23,6 +24,7 @@ with st.sidebar:
     g["hole_cy"]=st.slider("Hole y-position",-0.45,0.45,0.0,0.02)
     g["per_side"]=st.slider("Boundary subdivisions per side",4,28,12)
     g["radial"]=st.slider("Radial subdivisions",4,24,12)
+    g["element_type"]=st.selectbox("Finite element",["T3","T6"],index=0)
     st.header("Thermal loading [K]")
     a=config["analysis"]
     a["temperature_bc"]["left"]=st.number_input("Left boundary temperature",value=380.0)
@@ -46,8 +48,10 @@ else:
         st.error(f"Model could not be solved: {exc}")
     else:
         xy=sol.mesh.nodes
-        tri=mtri.Triangulation(xy[:,0],xy[:,1],sol.mesh.elements)
-        st.success(f"Solved: {len(xy)} nodes, {len(sol.mesh.elements)} triangular elements")
+        kind=element_type_for_mesh(sol.mesh)
+        subdivisions=4 if kind=="T6" else 1
+        tri=mtri.Triangulation(xy[:,0],xy[:,1],plotting_triangles(sol.mesh))
+        st.success(f"Solved: {len(xy)} nodes, {len(sol.mesh.elements)} {kind} elements")
         cols=st.columns(3)
         cols[0].metric("Maximum temperature",f"{sol.temperature.max():.1f} K")
         cols[1].metric("Maximum displacement",f"{np.linalg.norm(sol.displacement.reshape(-1,2),axis=1).max()*1000:.4g} mm")
@@ -57,7 +61,7 @@ else:
                ("Element-centroid von Mises [MPa]",sol.von_mises/1e6,"magma",True)]
         for col,(title,field,cmap,elemental) in zip(st.columns(3),cases):
             fig,ax=plt.subplots(figsize=(5.5,4.4),layout="constrained")
-            if elemental: im=ax.tripcolor(tri,facecolors=field,shading="flat",cmap=cmap)
+            if elemental: im=ax.tripcolor(tri,facecolors=np.repeat(field,subdivisions),shading="flat",cmap=cmap)
             else: im=ax.tripcolor(tri,field,shading="gouraud",cmap=cmap)
             ax.set_aspect("equal");ax.set_title(title);fig.colorbar(im,ax=ax,shrink=.75)
             col.pyplot(fig,clear_figure=True)

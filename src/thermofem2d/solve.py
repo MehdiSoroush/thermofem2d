@@ -6,6 +6,7 @@ from .geometry import make_mesh,Mesh
 from .fem import (assemble_thermal,assemble_elastic,boundary_load,
                   prescribed_temperature,prescribed_displacements,
                   solve_dirichlet,stresses)
+from .element import TRIANGLE_QUADRATURE,shape_and_gradients,element_type_for_mesh
 
 
 @dataclass
@@ -28,10 +29,14 @@ def _heat_load(mesh,material,analysis):
     if not np.isfinite(Q):
         raise ValueError("nonfinite volumetric heat source")
     if Q:
+        kind=element_type_for_mesh(mesh)
         for tri in mesh.elements:
-            p=mesh.nodes[tri]
-            area=abs((p[1,0]-p[0,0])*(p[2,1]-p[0,1])-(p[1,1]-p[0,1])*(p[2,0]-p[0,0]))/2
-            loads[tri]+=material["thickness"]*Q*area/3
+            p=mesh.nodes[tri[:3]]
+            fe=np.zeros(len(tri))
+            for r,s,w in TRIANGLE_QUADRATURE:
+                N,_,area=shape_and_gradients(p,kind,r,s)
+                fe+=material["thickness"]*Q*area*w*N
+            loads[tri]+=fe
     return loads
 
 

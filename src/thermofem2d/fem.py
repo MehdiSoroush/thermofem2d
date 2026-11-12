@@ -1,4 +1,4 @@
-"""T3 finite-element matrices and boundary operators.
+"""T3 and straight-sided T6 finite-element matrices and boundary operators.
 
 Theory: small-strain, isotropic plane stress, Fourier heat conduction.
 No thermo-mechanical feedback is included in this first release.
@@ -8,6 +8,7 @@ import numpy as np
 from scipy.sparse import coo_matrix, csr_matrix
 from scipy.sparse.linalg import spsolve
 from .geometry import Mesh, BOUNDARIES
+from .element import TRIANGLE_QUADRATURE, shape_and_gradients, element_type_for_mesh, strain_displacement
 
 
 def _validate_material(material: Mapping) -> None:
@@ -40,21 +41,28 @@ def _assemble(ndof, rows, cols, values):
 
 
 def assemble_thermal(mesh: Mesh, mat: Mapping):
-    """Return conductivity K and consistent heat-capacity matrix C."""
+    """Assemble thermal conductivity and *consistent* heat-capacity matrices.
+
+    Degree-four integration exactly integrates the polynomial T6 capacity
+    matrix and (straight-sided) T6 diffusion matrix. T3 is also supported.
+    """
     _validate_material(mat)
+    kind=element_type_for_mesh(mesh)
     rows=[]; cols=[]; kv=[]; cv=[]
     h=mat["thickness"]; cond=mat["conductivity"]
     rhoc=mat["density"]*mat["heat_capacity"]
     for tri in mesh.elements:
-        area,g=_element_geometry(mesh.nodes[tri])
-        Ke=cond*h*area*(g@g.T)
-        Ce=rhoc*h*area/12*np.array([[2,1,1],[1,2,1],[1,1,2]])
+        p=mesh.nodes[tri[:3]];n=len(tri)
+        Ke=np.zeros((n,n));Ce=np.zeros((n,n))
+        for r,s,w in TRIANGLE_QUADRATURE:
+            N,dN,area=shape_and_gradients(p,kind,r,s)
+            Ke+=cond*h*area*w*(dN@dN.T)
+            Ce+=rhoc*h*area*w*np.outer(N,N)
         for a,i in enumerate(tri):
             for b,j in enumerate(tri):
                 rows.append(int(i));cols.append(int(j));kv.append(Ke[a,b]);cv.append(Ce[a,b])
     n=len(mesh.nodes)
     return _assemble(n,rows,cols,kv),_assemble(n,rows,cols,cv)
-
 
 def _boundary_conditions(mesh, specs, ndof, component=None):
     """Map boundary labels to nodal fixed DOFs, checking corner consistency."""
@@ -108,7 +116,11 @@ def solve_dirichlet(A:csr_matrix, rhs:np.ndarray, fixed:dict[int,float]):
 
 
 def boundary_load(mesh, loads, multiplier=1, components=1):
-    """Integrate constant-in-space edge flux/traction with exact T3 line loads."""
+    """Consistent constant edge flux/traction for linear or quadratic edges.
+
+    T6 edges have ordering [end0,mid,end1]; Simpson weights integrate their
+    quadratic Lagrange edge interpolation exactly on straight sides.
+    """
     result=np.zeros(len(mesh.nodes)*components)
     for label,value in loads.items():
         if label not in BOUNDARIES:
@@ -116,67 +128,73 @@ def boundary_load(mesh, loads, multiplier=1, components=1):
         val=np.asarray(value,dtype=float).reshape(-1)
         if len(val)!=components or not np.all(np.isfinite(val)):
             raise ValueError("incorrect boundary load components")
-        for a,b in mesh.edges[label]:
+        for edge in mesh.edges[label]:
+            if len(edge)==2:
+                weights=(0.5,0.5);a,b=edge
+            elif len(edge)==3:
+                weights=(1/6,2/3,1/6);a,_,b=edge
+            else:
+                raise ValueError("boundary edges must contain two or three nodes")
             L=np.linalg.norm(mesh.nodes[b]-mesh.nodes[a])
-            for nid in (a,b):
-                result[nid*components:(nid+1)*components]+=multiplier*L/2*val
+            for nid,weight in zip(edge,weights):
+                result[nid*components:(nid+1)*components]+=multiplier*L*weight*val
     return result
 
-
 def assemble_elastic(mesh:Mesh, mat:Mapping, temperature:np.ndarray, tractions=None):
-    """Assemble plane-stress stiffness and consistent thermal-expansion load."""
+    """Plane-stress stiffness and consistent temperature-dependent load.
+
+    This is a *one-way* thermal-to-mechanical formulation; the heat equation
+    contains no feedback from strain rate. T6 temperatures are interpolated
+    at each integration point, not replaced by their nodal arithmetic mean.
+    """
     _validate_material(mat)
     if temperature.shape!=(len(mesh.nodes),):
         raise ValueError("temperature vector shape mismatch")
+    kind=element_type_for_mesh(mesh)
     D=plane_stress_matrix(mat["E"],mat["nu"])
     rows=[];cols=[];vals=[]
-    f=boundary_load(mesh, tractions or {},mat["thickness"],components=2)
+    f=boundary_load(mesh,tractions or {},mat["thickness"],components=2)
     for tri in mesh.elements:
-        area,g=_element_geometry(mesh.nodes[tri]); B=np.zeros((3,6))
-        for n in range(3):
-            dx,dy=g[n]; B[0,2*n]=dx;B[1,2*n+1]=dy
-            B[2,2*n]=dy;B[2,2*n+1]=dx
-        Ke=mat["thickness"]*area*(B.T@D@B)
-        eps_th=mat["alpha"]*(temperature[tri].mean()-mat["T_ref"])*np.array([1,1,0])
-        fe=mat["thickness"]*area*(B.T@D@eps_th)
-        dof=np.ravel([[2*int(n),2*int(n)+1] for n in tri])
+        p=mesh.nodes[tri[:3]];n=len(tri)
+        Ke=np.zeros((2*n,2*n));fe=np.zeros(2*n)
+        for r,s,w in TRIANGLE_QUADRATURE:
+            N,dN,area=shape_and_gradients(p,kind,r,s)
+            B=strain_displacement(dN)
+            Ke+=mat["thickness"]*area*w*(B.T@D@B)
+            temp=float(N@temperature[tri])
+            eps_th=mat["alpha"]*(temp-mat["T_ref"])*np.array([1.,1.,0.])
+            fe+=mat["thickness"]*area*w*(B.T@D@eps_th)
+        dof=np.ravel([[2*int(nd),2*int(nd)+1] for nd in tri])
         f[dof]+=fe
         for a,i in enumerate(dof):
             for b,j in enumerate(dof):
-                rows.append(i);cols.append(j);vals.append(Ke[a,b])
+                rows.append(int(i));cols.append(int(j));vals.append(Ke[a,b])
     return _assemble(2*len(mesh.nodes),rows,cols,vals),f
 
-
 def stresses(mesh:Mesh,mat:Mapping,temperature:np.ndarray,displacement:np.ndarray):
-    """Raw element-centroid stresses, not nodally smoothed quantities."""
+    """Raw element-centroid stress (not nodally averaged or extrapolated)."""
     D=plane_stress_matrix(mat["E"],mat["nu"])
+    kind=element_type_for_mesh(mesh)
     sigma=np.empty((len(mesh.elements),3))
     for i,tri in enumerate(mesh.elements):
-        _,g=_element_geometry(mesh.nodes[tri]);B=np.zeros((3,6))
-        for n,(dx,dy) in enumerate(g):
-            B[0,2*n]=dx;B[1,2*n+1]=dy
-            B[2,2*n]=dy;B[2,2*n+1]=dx
+        N,g,_=shape_and_gradients(mesh.nodes[tri[:3]],kind,1/3,1/3)
+        B=strain_displacement(g)
         ue=displacement[np.ravel([[2*int(n),2*int(n)+1] for n in tri])]
-        eth=mat["alpha"]*(temperature[tri].mean()-mat["T_ref"])*np.array([1,1,0])
+        eth=mat["alpha"]*(N@temperature[tri]-mat["T_ref"])*np.array([1.,1.,0.])
         sigma[i]=D@(B@ue-eth)
     sx,sy,txy=sigma.T
-    von_mises=np.sqrt(np.maximum(sx*sx-sx*sy+sy*sy+3*txy*txy,0))
-    return sigma,von_mises
-
+    vm=np.sqrt(np.maximum(sx*sx-sx*sy+sy*sy+3*txy*txy,0))
+    return sigma,vm
 
 def element_heat_flux(mesh: Mesh, mat: Mapping, temperature: np.ndarray) -> np.ndarray:
-    """Return elementwise Fourier heat flux q = -k grad(T), in W/m².
-
-    The T3 temperature gradient is constant within each element.  The output
-    represents flux per unit area, not an edge-integrated heat flow.  Input
-    temperature is in kelvin and mesh geometry in metres.
-    """
+    """Fourier flux at each *element centroid* in W/m² (not integrated heat)."""
     _validate_material(mat)
-    temperature = np.asarray(temperature, dtype=float)
-    if temperature.shape != (len(mesh.nodes),) or not np.all(np.isfinite(temperature)):
+    temperature=np.asarray(temperature,dtype=float)
+    if temperature.shape!=(len(mesh.nodes),) or not np.all(np.isfinite(temperature)):
         raise ValueError("expected one finite temperature per mesh node")
-    flux = np.empty((len(mesh.elements), 2), dtype=float)
-    for e, tri in enumerate(mesh.elements):
-        _, gradients = _element_geometry(mesh.nodes[tri])
-        flux[e] = -mat["conductivity"] * (temperature[tri] @ gradients)
+    kind=element_type_for_mesh(mesh)
+    flux=np.empty((len(mesh.elements),2),dtype=float)
+    for i,tri in enumerate(mesh.elements):
+        _,g,_=shape_and_gradients(mesh.nodes[tri[:3]],kind,1/3,1/3)
+        flux[i]=-mat["conductivity"]*(temperature[tri]@g)
     return flux

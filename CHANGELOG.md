@@ -1,5 +1,17 @@
 # Change history
 
+## v0.2.0 — 12 November 2026
+
+- Added conforming quadratic T6 elements with globally shared midside nodes,
+  exact quadratic-edge constant loads and degree-four triangular quadrature.
+- Generalized thermal conductivity/capacity, plane-stress stiffness,
+  thermal-expansion loading, heat flux and centroid stress recovery to T3/T6.
+- Added a T6 selector in the Streamlit interface and CLI JSON configurations.
+- Added source-accurate T6 formulation notes and T3-versus-T6 numerical comparison.
+- Added nine analytical/numerical T6 tests (36 passed locally, one optional GUI test skipped).
+- Retained **one-way** coupling; historical 2016 fully coupled three-field T6 not reconstructed.
+
+
 ## v0.1.1 — 12 November 2026
 
 - Added analytically specified harmonic thermal and affine constant-strain patch tests on perforated meshes.
