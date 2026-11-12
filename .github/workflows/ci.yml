@@ -18,6 +18,7 @@ jobs:
       - run: python -m pip install -e ".[dev]"
       - run: python -m pytest -q
       - run: python -m thermofem2d.cli --config examples/steady_plate.json --out results
+      - run: python -m thermofem2d.cli --config examples/coupled_plate_t6.json --out results-coupled
       - run: python -m thermofem2d.cli --config examples/steady_plate_t6.json --out results-t6
 
   app-smoke:

@@ -33,7 +33,14 @@ def main(argv=None):
     tri=sol.mesh.elements[:,:3]
     p0,p1,p2=nodes[tri[:,0]],nodes[tri[:,1]],nodes[tri[:,2]]
     material_area = 0.5 * np.sum((p1[:,0]-p0[:,0])*(p2[:,1]-p0[:,1]) - (p1[:,1]-p0[:,1])*(p2[:,0]-p0[:,0]))
-    summary={"version":"0.2.0","source_config":str(args.config),
+    if sol.displacement_history is not None:
+        np.savetxt(out/"data"/"mechanical_displacement_history.csv",
+                   np.column_stack([sol.times, sol.displacement_history]), delimiter=",",
+                   header="time_s,"+",".join(f"u_{i}_m" for i in range(2*n)), comments="")
+        np.savetxt(out/"data"/"mechanical_velocity_history.csv",
+                   np.column_stack([sol.times, sol.velocity_history]), delimiter=",",
+                   header="time_s,"+",".join(f"v_{i}_m_per_s" for i in range(2*n)), comments="")
+    summary={"version":"0.3.0","source_config":str(args.config),
              "nodes":n,"element_type":element_type_for_mesh(sol.mesh),
              "plate_material_area_m2":float(material_area),
              "max_element_heat_flux_W_per_m2":float(np.linalg.norm(flux,axis=1).max()),"elements":len(sol.mesh.elements),
@@ -41,8 +48,12 @@ def main(argv=None):
              "temperature_max_K":float(sol.temperature.max()),
              "max_displacement_m":float(np.max(np.linalg.norm(sol.displacement.reshape(-1,2),axis=1))),
              "max_element_centroid_von_mises_Pa":float(sol.von_mises.max()),
-             "analysis_type":"one-way thermal to quasi-static plane stress",
-             "validation_status":"analytical and manufactured-solution tests; historical coupled model not reproduced"}
+             "analysis_type":("two-way coupled transient plane-stress thermoelasticity"
+                              if sol.displacement_history is not None and sol.two_way_feedback
+                              else "dynamic one-way thermal to structural mechanics"
+                              if sol.displacement_history is not None
+                              else "one-way thermal to quasi-static plane stress"),
+             "validation_status":"analytical and manufactured-solution tests; original 2016 coupled outputs not recovered"}
     (out/"data"/"summary.json").write_text(json.dumps(summary,indent=2),encoding="utf-8")
     print(json.dumps(summary,indent=2));print("Figures:",*[str(x) for x in images],sep="\n  ")
     return summary

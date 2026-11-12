@@ -11,8 +11,8 @@ from thermofem2d.element import plotting_triangles,element_type_for_mesh
 
 st.set_page_config(page_title="ThermoFEM-2D | FEM laboratory", layout="wide")
 st.title("ThermoFEM-2D")
-st.caption("v0.2.0 • Parametric T3/T6 plate-with-hole FEM • One-way thermal → plane-stress mechanical response")
-st.warning("Research prototype, not independently field validated. T6 here is a sequential thermal/plane-stress element, not the historical fully coupled 18-DOF model.")
+st.caption("v0.3.0 • Parametric T3/T6 plate FEM • sequential or fully coupled transient dynamics")
+st.warning("Research prototype. The coupled option is a new reduced plane-stress T3/T6 implementation; it has not been benchmarked against the original 2016 numerical results or independent industrial software.")
 base=json.loads((Path(__file__).parent/"examples/steady_plate.json").read_text())
 config=copy.deepcopy(base)
 with st.sidebar:
@@ -30,14 +30,25 @@ with st.sidebar:
     a["temperature_bc"]["left"]=st.number_input("Left boundary temperature",value=380.0)
     a["temperature_bc"]["right"]=st.number_input("Right boundary temperature",value=298.0)
     st.header("Physics")
-    a["thermal_mode"]=st.selectbox("Thermal model",["steady","transient"])
-    if a["thermal_mode"]=="transient":
-        a["initial_temperature"]=st.number_input("Initial interior temperature [K]",value=298.0)
-        a["time_step"]=st.number_input("Time step [s]",min_value=1.0,value=14400.0)
-        a["steps"]=st.slider("Time steps",1,120,10)
+    a["thermoelastic_mode"] = st.selectbox("Thermomechanical physics",
+        ["one_way_quasistatic", "coupled_dynamic"],
+        format_func=lambda x: "Sequential quasi-static (v0.2 baseline)" if x=="one_way_quasistatic" else "Two-way coupled dynamic (v0.3)")
+    if a["thermoelastic_mode"] == "coupled_dynamic":
+        a["thermal_mode"] = "transient"
+        a["thermoelastic_feedback"] = st.checkbox("Enable strain-rate → temperature feedback", value=True)
+        a["initial_temperature"] = st.number_input("Initial interior temperature [K]", value=298.0)
+        a["time_step"] = st.number_input("Time step [s]", min_value=1e-8, value=4e-5, format="%.8f")
+        a["steps"] = st.slider("Dynamic time steps", 1, 60, 12)
+        st.caption("Constant temperature and displacement boundaries; idealized small-strain plane stress.")
+    else:
+        a["thermal_mode"]=st.selectbox("Thermal model",["steady","transient"])
+        if a["thermal_mode"]=="transient":
+            a["initial_temperature"]=st.number_input("Initial interior temperature [K]",value=298.0)
+            a["time_step"]=st.number_input("Time step [s]",min_value=1.0,value=14400.0)
+            a["steps"]=st.slider("Time steps",1,120,10)
     run=st.button("Solve model",type="primary",use_container_width=True)
 
-st.markdown("**Model assumptions:** homogeneous isotropic material; linear Fourier heat conduction; small strain; plane stress; free hole; thermally induced mechanical response is one-way and quasi-static.")
+st.markdown("**Model assumptions:** homogeneous isotropic material, constant properties, Fourier conduction, small-strain plane stress, traction-free hole by default. Two-way coupling is optional and uses a linearized constant-reference-temperature model.")
 if not run:
     st.info("Configure the model in the sidebar and select **Solve model**.")
 else:
@@ -71,8 +82,16 @@ else:
             ax.triplot(tri,lw=.4,color="#19857D");ax.set_aspect("equal")
             st.pyplot(fig);plt.close(fig)
             if len(sol.times)>1:
-                st.line_chart({"Time [h]":sol.times/3600,
-                               "Mean nodal temperature [K]":sol.temperature_history.mean(axis=1)},x="Time [h]",y="Mean nodal temperature [K]")
+                if sol.displacement_history is not None:
+                    st.line_chart({"Time [s]":sol.times,
+                                   "Mean nodal temperature [K]":sol.temperature_history.mean(axis=1)},
+                                  x="Time [s]", y="Mean nodal temperature [K]")
+                    maximum_u = np.linalg.norm(sol.displacement_history.reshape(len(sol.times),-1,2),axis=2).max(axis=1)
+                    st.line_chart({"Time [s]":sol.times, "Max displacement [mm]":1000*maximum_u},
+                                  x="Time [s]",y="Max displacement [mm]")
+                else:
+                    st.line_chart({"Time [h]":sol.times/3600,
+                                   "Mean nodal temperature [K]":sol.temperature_history.mean(axis=1)},x="Time [h]",y="Mean nodal temperature [K]")
         st.download_button("Download model JSON",data=json.dumps(config,indent=2),file_name="thermofem2d_model.json",mime="application/json")
         buf=io.StringIO();buf.write("x_m,y_m,T_K,ux_m,uy_m\n")
         np.savetxt(buf,np.column_stack((xy,sol.temperature,sol.displacement[::2],sol.displacement[1::2])),delimiter=",")

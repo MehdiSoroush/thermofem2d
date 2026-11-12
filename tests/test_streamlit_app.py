@@ -29,3 +29,19 @@ def test_ui_can_solve_with_t6():
     assert not at.exception
     assert at.selectbox[idx].value == 'T6'
     assert len(at.success) >= 1
+
+
+def test_ui_can_select_two_way_coupling():
+    app = Path(__file__).resolve().parents[1] / 'app.py'
+    at = AppTest.from_file(str(app), default_timeout=120).run()
+    assert not at.exception
+    idx = [box.label for box in at.selectbox].index('Thermomechanical physics')
+    at.selectbox[idx].set_value('coupled_dynamic').run()
+    # Use a small mesh for the monolithic UI smoke test.
+    sliders = {x.label: x for x in at.slider}
+    sliders['Boundary subdivisions per side'].set_value(4).run()
+    sliders = {x.label: x for x in at.slider}
+    sliders['Radial subdivisions'].set_value(4).run()
+    at.button[0].click().run()
+    assert not at.exception
+    assert len(at.success) >= 1

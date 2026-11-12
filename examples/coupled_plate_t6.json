@@ -1,0 +1,17 @@
+{
+  "geometry": {"width": 2.0, "height": 2.0, "hole_width": 0.24, "hole_height": 0.20, "hole_cx": 0.12, "hole_cy": -0.08, "per_side": 6, "radial": 5, "element_type": "T6"},
+  "material": {"E": 200000000000.0, "nu": 0.3, "alpha": 0.0000117, "conductivity": 54.0, "density": 7830.0, "heat_capacity": 452.0, "thickness": 0.02, "T_ref": 298.0},
+  "analysis": {
+    "thermoelastic_mode": "coupled_dynamic",
+    "thermal_mode": "transient",
+    "thermoelastic_feedback": true,
+    "time_step": 0.00004,
+    "steps": 25,
+    "initial_temperature": 298.0,
+    "temperature_bc": {"left": 310.0, "right": 298.0},
+    "inward_heat_flux": {},
+    "volumetric_heat_source": 0.0,
+    "displacement_bc": {"ux": {"left": 0.0}, "uy": {"bottom": 0.0}},
+    "traction_bc": {"top": [0.0, 2000000.0]}
+  }
+}

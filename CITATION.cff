@@ -5,7 +5,7 @@ title: "ThermoFEM-2D: Parametric finite element analysis of perforated plates"
 authors:
   - family-names: Soroush
     given-names: Mehdi
-version: 0.2.0
+version: 0.3.0
 date-released: 2026-11-12
 license: MIT
-abstract: "Open Python research prototype for steady/transient heat conduction and one-way plane-stress thermoelasticity using T3 and affine T6 elements in plates with parametric rectangular holes, with numerical checks and visualizations."
+abstract: "Open Python research prototype for steady/transient heat conduction and optional two-way transient plane-stress thermoelasticity and sequential one-way analysis using T3 and affine T6 elements in plates with parametric rectangular holes, with numerical checks and visualizations."

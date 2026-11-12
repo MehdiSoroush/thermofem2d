@@ -21,6 +21,10 @@ class Solution:
     times: np.ndarray
     temperature_history: np.ndarray
     material: dict
+    displacement_history: np.ndarray | None = None
+    velocity_history: np.ndarray | None = None
+    mechanical_acceleration: np.ndarray | None = None
+    two_way_feedback: bool = False
 
 
 def _heat_load(mesh,material,analysis):
@@ -42,6 +46,12 @@ def _heat_load(mesh,material,analysis):
 
 def solve_model(config:dict)->Solution:
     """Execute a model with steady or backward-Euler transient heat solution."""
+    thermoelastic_mode=config["analysis"].get("thermoelastic_mode", "one_way_quasistatic")
+    if thermoelastic_mode == "coupled_dynamic":
+        from .coupled import solve_coupled_dynamic
+        return solve_coupled_dynamic(config)
+    if thermoelastic_mode != "one_way_quasistatic":
+        raise ValueError("thermoelastic_mode must be one_way_quasistatic or coupled_dynamic")
     mesh=make_mesh(**config["geometry"])
     mat=config["material"];analysis=config["analysis"]
     K,C=assemble_thermal(mesh,mat)
