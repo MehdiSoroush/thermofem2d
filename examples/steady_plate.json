@@ -1,0 +1,5 @@
+{
+  "geometry": {"width": 2.0, "height": 2.0, "hole_width": 0.24, "hole_height": 0.20, "hole_cx": 0.0, "hole_cy": 0.0, "per_side": 16, "radial": 14},
+  "material": {"E": 200000000000.0, "nu": 0.3, "alpha": 0.0000117, "conductivity": 54.0, "density": 7830.0, "heat_capacity": 452.0, "thickness": 1.0, "T_ref": 298.0},
+  "analysis": {"thermal_mode": "steady", "temperature_bc": {"left": 380.0, "right": 298.0}, "inward_heat_flux": {}, "volumetric_heat_source": 0.0, "displacement_bc": {"ux": {"left": 0.0}, "uy": {"bottom": 0.0}}, "traction_bc": {}}
+}
