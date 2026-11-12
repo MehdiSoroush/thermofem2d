@@ -1,0 +1,44 @@
+name: Generate published simulation results
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/generate-results.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish-results:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install and verify solver
+        run: |
+          python -m pip install -e ".[dev]"
+          python -m pytest -q
+      - name: Reproduce figures and numerical data
+        run: |
+          python -m thermofem2d.cli --config examples/steady_plate.json --out results
+          python -m thermofem2d.cli --config examples/offset_hole_transient.json --out results-offset
+          python examples/scripts/mesh_study.py
+          python examples/scripts/verify_manufactured.py
+      - name: Commit generated results to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results results-offset
+          if ! git diff --cached --quiet; then
+            git commit -m "results: publish reproducible simulation outputs [skip ci]"
+            git push origin HEAD:main
+          else
+            echo "Generated results are already up to date."
+          fi
