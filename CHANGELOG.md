@@ -1,5 +1,13 @@
 # Change history
 
+## 0.5.0 — November 2026 (independent spatial Q4 comparison)
+
+- Implemented a separately assembled Q4 reference finite element solver for rectangular perforated plates with two-way plane-stress thermoelastic coupling.
+- Added Q4 quadrature, geometry, matrix, thermodynamic-feedback and analytical patch tests; 10 new automated tests.
+- Produced matched-vertex T3/T6–Q4 transient temperature and displacement difference plots and CSV tables.
+- Explicitly documented significant unresolved spatial disagreement, especially T6–Q4 displacement differences; not presented as independent continuum validation.
+
+
 ## 0.4.0 — November 2026 (temporal reference, energy budget, refinement)
 
 - Added independently implemented DOP853 time integration of the *same* T3/T6 coupled semi-discrete equations for assessing Newmark/BE temporal accuracy.

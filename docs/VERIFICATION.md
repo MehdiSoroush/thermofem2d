@@ -1,4 +1,4 @@
-# Numerical verification and known limitations — 0.3.0
+# Numerical verification and known limitations — v0.5.0
 
 ## Current verification cases
 
@@ -160,3 +160,7 @@ DOP853 **time-integration** comparison, thermodynamic energy-budget identity,
 T3/T6 time-step convergence data, reproducible figures/CSVs, and spatial
 sensitivity. DOP853 uses the **same finite-element spatial matrices**, so it
 does not replace an external spatial-FEM benchmark or historical replication.
+
+## v0.5 Q4 spatial cross-comparison
+
+Version 0.5 introduces an independently constructed and assembled Q4 spatial-reference FEM with matching physical assumptions. Its analytical affine-field patch tests pass, and selected T3/T6–Q4 coupled simulations are compared at matching vertices. **The observed residual T6–Q4 displacement differences remain large**, so these data do not establish continuum spatial convergence or validate stress peaks. The separate reference Q4 element is not yet a user-selectable production element. Full details and reproducible outputs: [Q4 spatial reference](Q4_SPATIAL_REFERENCE.md).

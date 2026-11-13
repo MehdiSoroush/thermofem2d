@@ -11,7 +11,7 @@ from thermofem2d.element import plotting_triangles,element_type_for_mesh
 
 st.set_page_config(page_title="ThermoFEM-2D | FEM laboratory", layout="wide")
 st.title("ThermoFEM-2D")
-st.caption("v0.4.0 • Parametric T3/T6 plate FEM • sequential or fully coupled transient dynamics")
+st.caption("v0.5.0 • Parametric T3/T6 plate FEM • sequential or fully coupled transient dynamics")
 st.warning("Research prototype. The coupled option is a new reduced plane-stress T3/T6 implementation; it has not been benchmarked against the original 2016 numerical results or independent industrial software.")
 base=json.loads((Path(__file__).parent/"examples/steady_plate.json").read_text())
 config=copy.deepcopy(base)
