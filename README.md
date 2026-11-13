@@ -4,7 +4,7 @@
 
 **Parametric finite element analysis of a perforated plate under thermal loading**
 
-> **v0.5.0 — independent Q4 spatial cross-check, November 2026.** In addition to the sequential T3/T6 solver, the software includes **newly implemented two-way transient linear plane-stress thermoelasticity** with mechanical inertia and strain-rate thermal feedback. The original 2016 MATLAB numerical results have **not** been independently reproduced.
+> **v0.6.0 — continuum-manufactured coupled transient verification, November 2026.** In addition to the sequential T3/T6 solver, the software includes **newly implemented two-way transient linear plane-stress thermoelasticity** with mechanical inertia and strain-rate thermal feedback. The original 2016 MATLAB numerical results have **not** been independently reproduced.
 
 ![Six-panel computational overview: temperature, displacement, element-centroid von Mises stress, Fourier heat flux, T3 mesh and displayed deformed geometry](results/figures/overview.png)
 
@@ -12,7 +12,7 @@
 
 ThermoFEM-2D is a small, auditable Python finite-element research application. The source study was a **summer 1395 (2016) MATLAB coursework project**, concerned with classical coupled thermoelasticity of a square perforated plate using six-node quadratic triangular elements and three nodal unknowns (`u_x`, `u_y`, `theta`). The archival Persian-language manuscript is not distributed here.
 
-**The 2026 Python solver is an independently implemented continuation of the 2016 coursework.** Version 0.2 introduced verified straight-sided T6 elements; v0.3 added **dynamic mechanical inertia and two-way thermoelastic coupling**; v0.4 added **independent-in-time reference integration and energy-budget checks** for both T3 and T6; v0.5 adds an **independently assembled Q4 quadrilateral reference** for spatial comparisons, including explicit evidence of unresolved disagreement. The new plane-stress numerical method has been tested against algebraic and analytical limiting cases, but it is **not** a literal reconstruction of the incomplete historical matrices or results. See [coupled dynamics](docs/COUPLED_DYNAMICS.md), [source audit](docs/SOURCE_AUDIT.md), and [formulation](docs/FORMULATION.md).
+**The 2026 Python solver is an independently implemented continuation of the 2016 coursework.** Version 0.2 introduced verified straight-sided T6 elements; v0.3 added **dynamic mechanical inertia and two-way thermoelastic coupling**; v0.4 added **independent-in-time reference integration and energy-budget checks** for both T3 and T6; v0.5 adds an **independently assembled Q4 quadrilateral reference** for spatial comparisons; v0.6 adds a **continuum-manufactured exact coupled transient benchmark** and diagnoses the outstanding abruptly loaded T6–Q4 disagreement. The new plane-stress numerical method has been tested against algebraic and analytical limiting cases, but it is **not** a literal reconstruction of the incomplete historical matrices or results. See [coupled dynamics](docs/COUPLED_DYNAMICS.md), [source audit](docs/SOURCE_AUDIT.md), and [formulation](docs/FORMULATION.md).
 
 ## Current capabilities
 
@@ -25,7 +25,7 @@ ThermoFEM-2D is a small, auditable Python finite-element research application. T
 - Separately prescribed `ux` and `uy` on named boundaries with incompatible thermal corner values rejected.
 - Temperature, displacement magnitude, and **element-centroid** von Mises stress contour plots; **element-centroid Fourier heat-flux maps**, deformed-mesh visualization with a stated magnification factor, mesh inspection, CSV + JSON results.
 - Optional interactive Streamlit interface (geometry sliders and interactive parameter configuration).
-- Reproducible analytical checks, high-accuracy independent **temporal** reference integration, a **separate Q4 reference FEM** for spatial cross-checks (not an application-selectable element yet), linearized thermoelastic energy-budget diagnostics, mesh/time-step sensitivity studies, and GitHub Actions tests.
+- Reproducible analytical checks, high-accuracy independent **temporal** reference integration, a **separate Q4 reference FEM** for spatial cross-checks (not an application-selectable element yet), a **continuum-manufactured coupled transient benchmark**, linearized thermoelastic energy-budget diagnostics, mesh/time-step sensitivity studies, and GitHub Actions tests.
 
 ## Quick start
 
@@ -46,6 +46,7 @@ python examples/scripts/verify_manufactured.py
 python examples/scripts/compare_elements.py
 python examples/scripts/verify_coupled_convergence.py
 python examples/scripts/verify_q4_spatial.py
+python examples/scripts/verify_manufactured_coupled.py
 ```
 
 Optional graphical interface:
@@ -98,6 +99,12 @@ A separate, bilinear isoparametric Q4 reference uses an independently constructe
 
 The T6 implementation uses affine triangular geometry, polynomial quadratic Lagrange interpolation, degree-four six-point quadrature for the thermal capacity matrix, and fully integrated thermal and mechanical matrices. In a manufactured steady heat problem with exact quadratic temperature and a constant source, T6 reproduces the nodal field to numerical tolerance while T3 retains a nonzero spatial-discretization error. See [T6 elements](docs/T6_ELEMENTS.md), [T6 computed visualization](results-t6/figures/overview.png), and [element comparison](results/verification/t3_t6_comparison.png).
 
+### Continuum-manufactured transient verification (v0.6)
+
+The new [manufactured coupled benchmark](docs/MANUFACTURED_COUPLED.md) prescribes smooth quadratic exact displacement and temperature fields on a perforated geometry. Its **analytic continuum body force and heat-source terms** are derived independently of finite element matrices and include reciprocal thermal/strain-rate coupling. A second case adds **nonzero mechanical inertia**. T6 reproduces the chosen exactly representable fields to floating-point tolerance; T3/Q4 converge under refinement. Because the displacement/temperature boundary data vary in time, this is currently a dedicated **test harness**, not a claim that the ordinary GUI supports arbitrary time functions.
+
+The earlier **abrupt-load T6–Q4 discrepancy is not resolved**: static responses agree to about 1% or better at studied densities, but refining only the timestep does not remove the roughly 63–67% short-time dynamic displacement difference at coarse meshes. See the [diagnostic report](docs/MANUFACTURED_COUPLED.md). An external FEM wave-transient reference and a controlled smooth-ramp convergence study remain necessary.
+
 ## Verification status
 
 The automated tests include:
@@ -112,7 +119,7 @@ The automated tests include:
 - Manufactured quadratic heat equation with explicitly prescribed boundary temperatures and constant volumetric source: **RMS free-node error decreases by 37.9×** across six mesh levels (`results/verification/`).
 - Conflicting BC and invalid timestep errors; numerical postprocessing smoke tests.
 
-**Not yet verified:** independently benchmarked spatial convergence to a continuum reference or an external established FE solver; original 2016 numerical outputs/matrices; curved-hole geometry; general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The **new** two-way dynamics and structural inertia have internal algebraic/limiting-case checks, not independent engineering validation. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
+**Not yet verified:** external established-FEM benchmarking for the abrupt dynamic wave problem; original 2016 numerical outputs/matrices; curved-hole geometry; general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The two-way dynamics and structural inertia have internal tests and a continuum-manufactured exact-solution benchmark, but not independent engineering validation for arbitrary transient loads. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
 
 ## Repository layout
 
@@ -122,6 +129,7 @@ src/thermofem2d/element.py    Quadratic shape functions, Gauss quadrature, plott
 src/thermofem2d/fem.py        Physical element matrices and boundary assembly
 src/thermofem2d/solve.py      Sequential and coupled-mode dispatch
 src/thermofem2d/q4_reference.py  Independently assembled Q4 spatial benchmark (not an app solver)
+src/thermofem2d/manufactured.py  Continuum-forced dynamic exact-solution verification harness
 src/thermofem2d/coupled.py    Consistent inertia, reciprocal coupling, monolithic transient solve
 src/thermofem2d/plot.py       Scientific post-processing and six-panel dashboard
 src/thermofem2d/cli.py        Reproducible command-line runner
@@ -137,12 +145,13 @@ docs/                         Original-source audit, derivations, verification
 - **0.2 (complete):** Verified T3/T6 elements, documentation and cross-element tests.
 - **0.3 (complete):** New, plane-stress two-way coupled dynamic T3/T6 system and synthetic numerical tests; not historical MATLAB model replication.
 - **0.4 (complete):** Independent temporal ODE reference, energy balance and exploratory mesh sensitivity.
-- **0.5 (current):** Independently assembled Q4 reference for a *rectangular-hole plate* and spatial cross-comparisons; large residual differences remain to investigate.
-- **0.6 (planned):** General hole shapes, selectable quadrilateral family in the application, and richer BC/visualization.
+- **0.5 (complete):** Independently assembled Q4 reference for a rectangular-hole plate and spatial cross-comparisons.
+- **0.6 (current):** Analytically forced coupled transient quadratic benchmark with nonzero-inertia variant and explicit Q4/T6 static versus abrupt-dynamic diagnostics; the abrupt-load difference remains open.
+- **0.7 (planned):** Controlled smooth-ramp wave-transient verification, then general hole shapes and selectable quadrilateral elements in the application.
 - **1.0:** Independently benchmarked dynamic coupling, richer initial/boundary conditions, numerical diagnostics, and reproducible technical reports.
 
 The scope of these releases is contingent on mathematical verification, not merely adding interface controls.
 
 ## Provenance, citation, and license
 
-Historical coursework: **2016 (1395)**. New Python software and numerical tests: **2026**. The new solver is not a literal translation of the original MATLAB appendix. Cite software results as *ThermoFEM-2D v0.5.0 (2026)* with the specific input configuration and numerical verification status. MIT License.
+Historical coursework: **2016 (1395)**. New Python software and numerical tests: **2026**. The new solver is not a literal translation of the original MATLAB appendix. Cite software results as *ThermoFEM-2D v0.6.0 (2026)* with the specific input configuration and numerical verification status. MIT License.

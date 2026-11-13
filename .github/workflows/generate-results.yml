@@ -35,6 +35,7 @@ jobs:
           python examples/scripts/verify_manufactured.py
           python examples/scripts/verify_coupled_convergence.py
           python examples/scripts/verify_q4_spatial.py
+          python examples/scripts/verify_manufactured_coupled.py
           python examples/scripts/compare_elements.py
       - name: Commit generated results to main
         run: |

@@ -1,5 +1,16 @@
 # Change history
 
+## 0.6.0 — 13 November 2026 (continuum-manufactured coupled transient verification)
+
+- Added analytically derived strong-form coupled continuum body forces and heat sources for a smooth quadratic-in-space exact solution; implemented a dedicated all-boundary time-dependent Dirichlet verification harness for T3, T6 and independently assembled Q4.
+- Added a nonzero-acceleration variant to exercise consistent structural inertia as well as thermal strain-rate feedback; added a feedback-disabled negative control.
+- Measured convergent T3/Q4 spatial RMS errors and T6 recovery of exactly representable quadratic fields to numerical precision.
+- Investigated the earlier abrupt-load T6/Q4 discrepancy separately: static differences shrink below 1%, but the short-time dynamic difference persists under time-step refinement; no unverified resolution claimed.
+- Added reproducible error/diagnostic CSVs and scientific plots, dedicated tests, CI regeneration, and transparent methodology.
+- Corrected the stale package `__version__` string and added a version-consistency check.
+
+
+
 ## 0.5.0 — November 2026 (independent spatial Q4 comparison)
 
 - Implemented a separately assembled Q4 reference finite element solver for rectangular perforated plates with two-way plane-stress thermoelastic coupling.
