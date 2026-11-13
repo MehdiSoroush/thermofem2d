@@ -121,5 +121,9 @@ Generated outputs in `results/verification/`:
 ## Verification boundaries and next required work
 
 - **Completed:** algebraic reciprocity, linearized energy identity diagnostics, separate high-accuracy temporal integration, T3/T6 temporal refinement, selected spatial-sensitivity cases, earlier thermal manufactured solutions and mechanical patch tests.
-- **Not completed:** independent *spatial* implementation of the coupled problem, comparison with Abaqus/another verified package, measured convergence of physically regular stress quantities, experimental validation, arbitrary boundary functions, nonlinear constitutive response, or a like-for-like reconstruction of original 2016 numerical results.
+- **Not completed in v0.4:** independent *spatial* implementation of the coupled problem (subsequently added as a separate internal Q4 reference in v0.5; see [Q4 spatial reference](Q4_SPATIAL_REFERENCE.md)), comparison with Abaqus/another verified package, measured convergence of physically regular stress quantities, experimental validation, arbitrary boundary functions, nonlinear constitutive response, or a like-for-like reconstruction of original 2016 numerical results.
 - No claim is made that an internal method-of-lines comparison removes shared FEM assembly errors.
+
+## v0.5 addendum: separate Q4 spatial implementation
+
+A separately assembled bilinear isoparametric Q4 solver now supplies a cross-element spatial reference without reusing the production T3/T6 element matrices. Its analytical patch tests pass, and T3/Q4 differences decrease with spatial refinement over the selected cases. **T6/Q4 relative displacement differences remain large**; the new comparison is therefore not a spatial-convergence certificate. See [the detailed Q4 report](Q4_SPATIAL_REFERENCE.md) and machine-readable CSV data. The original v0.4 time integration and energy balance analyses remain valid within their stated scope.

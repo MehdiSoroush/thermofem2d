@@ -20,6 +20,9 @@ jobs:
       - run: python -m thermofem2d.cli --config examples/steady_plate.json --out results
       - run: python -m thermofem2d.cli --config examples/coupled_plate_t6.json --out results-coupled
       - run: python -m thermofem2d.cli --config examples/steady_plate_t6.json --out results-t6
+      - name: Compare independent Q4 spatial reference
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        run: python examples/scripts/verify_q4_spatial.py
       - name: Verify coupled time integration and energy budget
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
         run: python examples/scripts/verify_coupled_convergence.py
