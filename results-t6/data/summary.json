@@ -4,12 +4,12 @@
   "nodes": 1360,
   "element_type": "T6",
   "plate_material_area_m2": 3.952,
-  "max_element_heat_flux_W_per_m2": 3265.556840884206,
+  "max_element_heat_flux_W_per_m2": 3265.556840884357,
   "elements": 640,
   "temperature_min_K": 298.0,
   "temperature_max_K": 380.0,
-  "max_displacement_m": 0.0015347409925647443,
-  "max_element_centroid_von_mises_Pa": 85643352.402742,
+  "max_displacement_m": 0.0015347409925647554,
+  "max_element_centroid_von_mises_Pa": 85643352.40274292,
   "analysis_type": "one-way thermal to quasi-static plane stress",
   "validation_status": "analytical and manufactured-solution tests; original 2016 coupled outputs not recovered"
 }

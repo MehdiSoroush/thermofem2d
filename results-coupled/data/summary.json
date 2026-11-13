@@ -4,12 +4,12 @@
   "nodes": 528,
   "element_type": "T6",
   "plate_material_area_m2": 3.952,
-  "max_element_heat_flux_W_per_m2": 5404.748046772216,
+  "max_element_heat_flux_W_per_m2": 5404.748046772236,
   "elements": 240,
   "temperature_min_K": 297.93746449992364,
   "temperature_max_K": 310.0,
-  "max_displacement_m": 5.392231363686094e-05,
-  "max_element_centroid_von_mises_Pa": 10368608.144034283,
+  "max_displacement_m": 5.392231363686303e-05,
+  "max_element_centroid_von_mises_Pa": 10368608.144033758,
   "analysis_type": "two-way coupled transient plane-stress thermoelasticity",
   "validation_status": "analytical and manufactured-solution tests; original 2016 coupled outputs not recovered"
 }
