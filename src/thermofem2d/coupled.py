@@ -90,11 +90,13 @@ def solve_coupled_dynamic(config):
     materials are implied by this entry point.
     """
     from .geometry import make_mesh
-    from .solve import Solution, _heat_load
+    from .solve import Solution, _heat_load, initial_temperature_field
 
     mesh = make_mesh(**config["geometry"])
     mat = config["material"]
     a = config["analysis"]
+    if not np.isfinite(mat["T_ref"]) or mat["T_ref"] <= 0:
+        raise ValueError("coupled thermoelasticity requires positive absolute T_ref [K]")
     if a.get("thermal_mode") != "transient":
         raise ValueError("coupled_dynamic requires thermal_mode='transient'")
     dt = float(a["time_step"])
@@ -107,9 +109,7 @@ def solve_coupled_dynamic(config):
     for label in ("initial_displacement", "initial_velocity"):
         if label in a and a[label] != 0:
             raise ValueError(f"{label} currently supports zero only")
-    initT = float(a.get("initial_temperature", mat["T_ref"]))
-    if not np.isfinite(initT):
-        raise ValueError("initial temperature must be finite")
+    initT = initial_temperature_field(mesh, mat, a)
 
     Kt, Ct = assemble_thermal(mesh, mat)
     # Zero-stress reference temperature isolates external forces from thermal loading.
@@ -135,7 +135,7 @@ def solve_coupled_dynamic(config):
     for i, value in fixed_u.items():
         u[i] = value
     v = np.zeros(nu)
-    theta = np.full(nt, initT-mat["T_ref"])
+    theta = initT - mat["T_ref"]
     for i, T in fixedT.items():
         theta[i] = T-mat["T_ref"]
     # Initial acceleration is consistent with moment balance on unconstrained

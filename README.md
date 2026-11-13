@@ -4,7 +4,7 @@
 
 **Parametric finite element analysis of a perforated plate under thermal loading**
 
-> **v0.3.0 — coupled transient prototype, November 2026.** In addition to the sequential T3/T6 solver, the software includes **newly implemented two-way transient linear plane-stress thermoelasticity** with mechanical inertia and strain-rate thermal feedback. The original 2016 MATLAB numerical results have **not** been independently reproduced.
+> **v0.4.0 — coupled transient verification release, November 2026.** In addition to the sequential T3/T6 solver, the software includes **newly implemented two-way transient linear plane-stress thermoelasticity** with mechanical inertia and strain-rate thermal feedback. The original 2016 MATLAB numerical results have **not** been independently reproduced.
 
 ![Six-panel computational overview: temperature, displacement, element-centroid von Mises stress, Fourier heat flux, T3 mesh and displayed deformed geometry](results/figures/overview.png)
 
@@ -12,7 +12,7 @@
 
 ThermoFEM-2D is a small, auditable Python finite-element research application. The source study was a **summer 1395 (2016) MATLAB coursework project**, concerned with classical coupled thermoelasticity of a square perforated plate using six-node quadratic triangular elements and three nodal unknowns (`u_x`, `u_y`, `theta`). The archival Persian-language manuscript is not distributed here.
 
-**The 2026 Python solver is an independently implemented continuation of the 2016 coursework.** Version 0.2 introduced verified straight-sided T6 elements; v0.3 adds **dynamic mechanical inertia and two-way thermoelastic coupling** for both T3 and T6. The new plane-stress numerical method has been tested against algebraic and analytical limiting cases, but it is **not** a literal reconstruction of the incomplete historical matrices or results. See [coupled dynamics](docs/COUPLED_DYNAMICS.md), [source audit](docs/SOURCE_AUDIT.md), and [formulation](docs/FORMULATION.md).
+**The 2026 Python solver is an independently implemented continuation of the 2016 coursework.** Version 0.2 introduced verified straight-sided T6 elements; v0.3 added **dynamic mechanical inertia and two-way thermoelastic coupling**; v0.4 adds **independent-in-time reference integration and energy-budget checks** for both T3 and T6. The new plane-stress numerical method has been tested against algebraic and analytical limiting cases, but it is **not** a literal reconstruction of the incomplete historical matrices or results. See [coupled dynamics](docs/COUPLED_DYNAMICS.md), [source audit](docs/SOURCE_AUDIT.md), and [formulation](docs/FORMULATION.md).
 
 ## Current capabilities
 
@@ -25,7 +25,7 @@ ThermoFEM-2D is a small, auditable Python finite-element research application. T
 - Separately prescribed `ux` and `uy` on named boundaries with incompatible thermal corner values rejected.
 - Temperature, displacement magnitude, and **element-centroid** von Mises stress contour plots; **element-centroid Fourier heat-flux maps**, deformed-mesh visualization with a stated magnification factor, mesh inspection, CSV + JSON results.
 - Optional interactive Streamlit interface (geometry sliders and interactive parameter configuration).
-- Reproducible synthetic verification cases, exact manufactured heat and plane-stress benchmarks, a quantitative conduction-convergence example, mesh sensitivity, and GitHub Actions tests.
+- Reproducible analytical checks, high-accuracy independent **temporal** reference integration, linearized thermoelastic energy-budget diagnostics, mesh/time-step sensitivity studies, and GitHub Actions tests.
 
 ## Quick start
 
@@ -44,6 +44,7 @@ python -m thermofem2d.cli --config examples/coupled_plate_t6.json --out results-
 python examples/scripts/mesh_study.py
 python examples/scripts/verify_manufactured.py
 python examples/scripts/compare_elements.py
+python examples/scripts/verify_coupled_convergence.py
 ```
 
 Optional graphical interface:
@@ -80,9 +81,13 @@ The T3 computed 6-panel overview above shows the **actual perforated geometry**.
 
 ### Coupled transient analysis (v0.3)
 
-To run the two-way formulation, set `analysis.thermoelastic_mode` to `"coupled_dynamic"`, `thermal_mode` to `"transient"`, and specify positive `time_step`, integer `steps` and `initial_temperature`. The full example is [`examples/coupled_plate_t6.json`](examples/coupled_plate_t6.json). The older solver remains available as `"one_way_quasistatic"`. Setting `thermoelastic_feedback` to `false` provides a dynamic **one-way** reference. Transient pure-Neumann thermal boundaries are permitted.
+To run the two-way formulation, set `analysis.thermoelastic_mode` to `"coupled_dynamic"`, `thermal_mode` to `"transient"`, and specify positive `time_step`, integer `steps` and `initial_temperature`. The initial temperature can be a constant in K, or an affine field `{"type":"affine", "base":310.0,"gx":6.0,"gy":-3.0}` with gradients in K/m. The full example is [`examples/coupled_plate_t6.json`](examples/coupled_plate_t6.json). The older solver remains available as `"one_way_quasistatic"`. Setting `thermoelastic_feedback` to `false` provides a dynamic **one-way** reference. Transient pure-Neumann thermal boundaries are permitted.
 
-The **new** coupled formulation assumes linear small-strain plane stress, constant coefficients, and constant boundary data; initial mechanical displacement and velocity are zero. Its reference-temperature linearization and the reduced plane-stress heat-capacity requirement are explained in [Coupled Dynamics](docs/COUPLED_DYNAMICS.md). This is not a recovered copy of the historical MATLAB model or an externally validated machine-design calculation.
+The **new** coupled formulation assumes linear small-strain plane stress, constant coefficients, and constant boundary data; initial mechanical displacement and velocity are zero. Its reference-temperature linearization and the reduced plane-stress heat-capacity requirement are explained in [Coupled Dynamics](docs/COUPLED_DYNAMICS.md). The coupled model requires a positive absolute `T_ref` in kelvin. Version 0.4 adds a separate high-accuracy method-of-lines ODE reference and an insulated energy/dissipation audit, described in [Independent Verification](docs/INDEPENDENT_VERIFICATION.md). Both checks use the same FE spatial matrices and are **not** an independently implemented FE solver, a recovered copy of the historical MATLAB model, or an externally validated machine-design calculation.
+
+### Temporal and energy validation (v0.4)
+
+The coupled solver has been compared against an independently implemented **SciPy DOP853 method-of-lines time integrator**, using the same finite-element matrices. Measured T3/T6 temperature and displacement differences decrease as `dt` is refined. An independent energy-budget calculation checks the expected dissipation identity for a source-free, insulated system; its discretization defect also decreases with refinement. These are **temporal and thermodynamic consistency checks**, not proof of continuum-level or independent spatial FEM validation. See [v0.4 verification and convergence results](docs/INDEPENDENT_VERIFICATION.md).
 
 ### T6 numerical checks
 
@@ -102,7 +107,7 @@ The automated tests include:
 - Manufactured quadratic heat equation with explicitly prescribed boundary temperatures and constant volumetric source: **RMS free-node error decreases by 37.9×** across six mesh levels (`results/verification/`).
 - Conflicting BC and invalid timestep errors; numerical postprocessing smoke tests.
 
-**Not yet verified:** an independent external solver comparison of the two-way dynamic model; original 2016 numerical outputs/matrices; curved-hole geometry; general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The **new** two-way dynamics and structural inertia have internal algebraic/limiting-case checks, not independent engineering validation. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
+**Not yet verified:** an independent external *spatial* solver comparison of the two-way dynamic model; original 2016 numerical outputs/matrices; curved-hole geometry; general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The **new** two-way dynamics and structural inertia have internal algebraic/limiting-case checks, not independent engineering validation. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
 
 ## Repository layout
 

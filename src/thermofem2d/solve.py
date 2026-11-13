@@ -44,6 +44,36 @@ def _heat_load(mesh,material,analysis):
     return loads
 
 
+def initial_temperature_field(mesh: Mesh, material: dict, analysis: dict) -> np.ndarray:
+    """Uniform or affine initial temperature in kelvin (spatial gradients K/m).
+
+    Configuration format: ``initial_temperature: 310.0`` (uniform), or
+    ``initial_temperature: {type: affine, base: 310, gx: 5, gy: -2}``.
+    No arbitrary Python expression is evaluated. Initial Dirichlet values
+    are imposed by each solver after evaluating this domain-wide field.
+    """
+    spec = analysis.get("initial_temperature", material["T_ref"])
+    if isinstance(spec, dict):
+        if set(spec) != {"type", "base", "gx", "gy"} or spec["type"] != "affine":
+            raise ValueError("initial temperature mapping requires type='affine', base, gx, gy")
+        try:
+            base, gx, gy = (float(spec[k]) for k in ("base", "gx", "gy"))
+        except (ValueError, TypeError) as err:
+            raise ValueError("initial affine temperature values must be numbers") from err
+        if not np.all(np.isfinite([base, gx, gy])):
+            raise ValueError("initial affine temperatures must be finite")
+        values = base + gx*mesh.nodes[:, 0] + gy*mesh.nodes[:, 1]
+    else:
+        try:
+            value = float(spec)
+        except (ValueError, TypeError) as err:
+            raise ValueError("initial temperature must be a finite scalar") from err
+        values = np.full(len(mesh.nodes), value)
+    if np.any(~np.isfinite(values)):
+        raise ValueError("initial temperature field contains nonfinite values")
+    return np.asarray(values, dtype=float)
+
+
 def solve_model(config:dict)->Solution:
     """Execute a model with steady or backward-Euler transient heat solution."""
     thermoelastic_mode=config["analysis"].get("thermoelastic_mode", "one_way_quasistatic")
@@ -67,7 +97,7 @@ def solve_model(config:dict)->Solution:
         dt=float(analysis["time_step"]);n=int(analysis["steps"])
         if not np.isfinite(dt) or dt<=0 or n<1 or n>10000 or n!=analysis["steps"]:
             raise ValueError("time step must be positive and step count must be 1..10000")
-        temp=np.full(len(mesh.nodes),float(analysis.get("initial_temperature",mat["T_ref"])))
+        temp=initial_temperature_field(mesh,mat,analysis)
         if not np.all(np.isfinite(temp)):
             raise ValueError("invalid initial temperature")
         # Dirichlet conditions are applied instantaneously at t=0+; the

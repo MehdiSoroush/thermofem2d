@@ -149,3 +149,17 @@ another independently derived model), quantified transient mesh/time-step
 convergence, generalized time-varying conditions, curved-edge holes, plane
 strain, and a complete re-derivation against the original 2016 matrices and
 results. The current numerical tests **do not prove industrial validation**.
+
+
+## Version 0.4 verification extension
+
+Version 0.4 introduces a separately implemented DOP853 method-of-lines
+reference time solver and a linearized thermoelastic energy-budget audit.
+See [Independent Verification](INDEPENDENT_VERIFICATION.md). These tools
+compare time integration and thermodynamic balances on the **same FE mesh**;
+they do not constitute independent spatial FEM or external validation.
+
+The initial temperature may be a uniform absolute temperature in kelvin or
+an affine field specified as `{"type":"affine", "base":310, "gx":6, "gy":-3}`
+(K/m gradients). Constant mechanical initial displacement and velocity remain
+zero in this release. The coupled reference temperature must be positive K.
