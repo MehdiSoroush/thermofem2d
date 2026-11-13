@@ -33,6 +33,7 @@ jobs:
           python -m thermofem2d.cli --config examples/coupled_plate_t6.json --out results-coupled
           python examples/scripts/mesh_study.py
           python examples/scripts/verify_manufactured.py
+          python examples/scripts/verify_coupled_convergence.py
           python examples/scripts/compare_elements.py
       - name: Commit generated results to main
         run: |

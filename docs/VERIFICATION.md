@@ -151,3 +151,12 @@ reproducibly generates time histories and maps at
 These are **internal physics and algebraic checks**, not an external
 solver-to-solver numerical validation. Accuracy, mesh/time-step convergence,
 and historical 2016 model equivalence remain open.
+
+
+## v0.4: additional coupled time-integration and energy checks
+
+See [Independent Verification](INDEPENDENT_VERIFICATION.md) for the independent
+DOP853 **time-integration** comparison, thermodynamic energy-budget identity,
+T3/T6 time-step convergence data, reproducible figures/CSVs, and spatial
+sensitivity. DOP853 uses the **same finite-element spatial matrices**, so it
+does not replace an external spatial-FEM benchmark or historical replication.

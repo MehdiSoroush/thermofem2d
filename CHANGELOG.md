@@ -1,5 +1,15 @@
 # Change history
 
+## 0.4.0 — November 2026 (temporal reference, energy budget, refinement)
+
+- Added independently implemented DOP853 time integration of the *same* T3/T6 coupled semi-discrete equations for assessing Newmark/BE temporal accuracy.
+- Added physically derived source-free/insulated thermoelastic energy/dissipation diagnostic and temporal convergence checks.
+- Added controlled affine initial-temperature fields to the transient T3/T6 paths.
+- Added machine-readable temporal/energy tables, exploratory spatial-sensitivity data and figures.
+- Validated positive absolute reference temperatures for the coupled model; expanded tests and CI.
+- Explicitly documented the limits of shared spatial matrices and the unresolved independent FE comparison.
+
+
 ## v0.3.0 — 12 November 2026
 
 - Added a monolithic **two-way coupled transient plane-stress** solver for T3 and T6.
