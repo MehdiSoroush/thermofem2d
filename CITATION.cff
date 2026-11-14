@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use these calculations, cite the software version and model configuration."
+message: "Software citations should specify the release version and model configuration."
 type: software
 title: "ThermoFEM-2D: Parametric finite element analysis of perforated plates"
 authors:

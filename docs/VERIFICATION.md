@@ -43,7 +43,7 @@ reference fields and differential equations are specified analytically.
 ### Exact harmonic temperature field
 
 The function `T(x,y) = 320 + 4*x - 7*y` K satisfies `div(k grad T) = 0` for
-constant conductivity. We prescribe this exact temperature on **all** outer
+constant conductivity. The exact temperature is prescribed on **all** outer
 and hole-boundary nodes, including the interior hole boundary (which therefore
 is *not insulated* in this benchmark). T3 reproduces the linear field to
 numerical precision, and the elementwise heat flux must be `q = -k*[4,-7]`.
@@ -51,7 +51,7 @@ This checks both the 2D stiffness assembly and Fourier-flux recovery.
 
 ### Exact constant-strain mechanical patch
 
-With `T = T_ref`, we prescribe an affine displacement field for a nonzero
+With `T = T_ref`, an affine displacement field is prescribed for a nonzero
 constant strain vector `epsilon = [1e-4,-0.7e-4,0.35e-4]`. The solver
 reproduces the nodal displacements and element stresses against
 `D*epsilon` to numerical precision. The test includes a perforated plate.

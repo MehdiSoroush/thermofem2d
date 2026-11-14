@@ -20,7 +20,7 @@ The body force \(\mathbf b\) has units N/m³ and the volumetric heat source \(Q\
 
 ## 2. Independently manufactured fields
 
-We prescribe the exact smooth continuum solution for \(x,y\) in metres and \(t\) in seconds:
+The manufactured benchmark uses the following exact smooth continuum solution for \(x,y\) in metres and \(t\) in seconds:
 
 \[
 \mathbf u^*(x,y,t)=A(t+\gamma t^2)\begin{bmatrix}x^2\\xy\end{bmatrix},\qquad
@@ -68,7 +68,7 @@ With **\(\gamma=5000\,\mathrm{s}^{-1}\)** on the 4-subdivision mesh, T6 still yi
 
 The v0.5 comparison used a **sudden, constant 2 MPa traction** and inspected the response after just \(0.16\) ms. That transient contains broad-frequency elastic waves. The new manufactured benchmark instead uses smooth fields and matched exact time-varying boundary data; the two problems must not be conflated.
 
-We performed two diagnostics on the original load case with matched Q4/T6 corner vertices:
+Two additional diagnostics were performed on the original load case with matched Q4/T6 corner vertices:
 
 - In the **static elasticity** limit with the same 2 MPa top traction at reference temperature, the relative RMS displacement difference falls from **1.03% (4 subdivisions)** to **0.44% (12 subdivisions)**. That supports both spatial stiffness implementations for this much simpler problem.
 - In the **short-time dynamic** problem at 4 subdivisions, refining the timestep from **8 to 64 steps over the same 0.16 ms** changes the relative RMS T6/Q4 difference from **64.0% to 66.6%**, rather than driving it toward zero. At 6 subdivisions, the analogous difference remains around **62–63%**.
