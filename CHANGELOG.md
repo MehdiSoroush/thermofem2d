@@ -45,7 +45,7 @@
   thermal-expansion loading, heat flux and centroid stress recovery to T3/T6.
 - Added a T6 selector in the Streamlit interface and CLI JSON configurations.
 - Added source-accurate T6 formulation notes and T3-versus-T6 numerical comparison.
-- Added nine analytical/numerical T6 tests (36 passed locally, one optional GUI test skipped).
+- Added nine analytical and numerical T6 verification tests; graphical interface checks are exercised separately in CI.
 - Retained **one-way** coupling; historical 2016 fully coupled three-field T6 not reconstructed.
 
 
@@ -55,7 +55,7 @@
 - Added quadratic manufactured heat-conduction benchmark with reproducible six-level convergence data and plot.
 - Added transient diffusion energy-decay verification, CLI/export and plotting tests (27 passing numerical/post-processing tests).
 - Added Fourier heat-flux recovery and raw element CSV, magnified deformed-mesh visualization, and a six-panel results overview.
-- Added optional Streamlit end-to-end smoke test as a dedicated future CI job; not yet run in the local environment.
+- Introduced a Streamlit end-to-end smoke test, subsequently incorporated into the GitHub Actions workflow.
 - Preserved transparent scope: T3, one-way heat-to-mechanics coupling, quasi-static plane stress; historical T6 two-way coupling not yet recovered.
 
 ## v0.1.0 — 12 November 2026
