@@ -1,5 +1,7 @@
 # ThermoFEM-2D
 
+**Mehdi Soroush** · Finite Element Research Software
+
 [![Numerical verification](https://github.com/MehdiSoroush/thermofem2d/actions/workflows/ci.yml/badge.svg)](https://github.com/MehdiSoroush/thermofem2d/actions/workflows/ci.yml)
 
 **Parametric finite element analysis of a perforated plate under thermal loading**
@@ -56,9 +58,9 @@ python -m pip install -e ".[app]"
 streamlit run app.py
 ```
 
-**The Streamlit UI is an optional convenience, not the verification baseline.** The command-line solver and tests do not depend on Streamlit. UI smoke tests run on GitHub Actions; the optional Streamlit dependency is not installed in the present local environment.
+**Streamlit is an optional interface.** The numerical solver and command-line verification do not require it; dedicated UI smoke tests run separately in GitHub Actions.
 
-## Change the geometry and boundary conditions
+## Geometry and boundary configuration
 
 All inputs are in JSON files in `examples/`:
 
@@ -71,7 +73,7 @@ All inputs are in JSON files in `examples/`:
 }
 ```
 
-Move the hole by changing `hole_cx` and `hole_cy`, resize it with `hole_width` and `hole_height`, refine the mesh with `per_side` and `radial`, and select `"element_type": "T3"` or `"T6"`. The hole must remain strictly inside the plate. **No geometrical edits to the FEM kernel are needed.**
+The hole centre is specified by `hole_cx` and `hole_cy`; `hole_width` and `hole_height` define its size. Mesh resolution is controlled by `per_side` and `radial`, and `element_type` selects `"T3"` or `"T6"`. The opening must remain strictly inside the plate. These configuration changes require **no modification to the FEM kernel**.
 
 Boundary identifiers are `left`, `right`, `top`, `bottom`, `hole`. Prescribed thermal values are given under `temperature_bc`, and mechanical displacement components under `displacement_bc` (`ux` and `uy`). Any unconstrained thermal boundary has zero natural flux; unconstrained mechanical boundaries are traction-free. The sample fixes horizontal displacements on the left edge and vertical displacements on the bottom edge to remove rigid-body modes. These conditions are **a new verification setup**, not a claim about the 2016 physical boundary conditions.
 
@@ -83,7 +85,7 @@ The T3 computed 6-panel overview above shows the **actual perforated geometry**.
 
 ### Coupled transient analysis (v0.3)
 
-To run the two-way formulation, set `analysis.thermoelastic_mode` to `"coupled_dynamic"`, `thermal_mode` to `"transient"`, and specify positive `time_step`, integer `steps` and `initial_temperature`. The initial temperature can be a constant in K, or an affine field `{"type":"affine", "base":310.0,"gx":6.0,"gy":-3.0}` with gradients in K/m. The full example is [`examples/coupled_plate_t6.json`](examples/coupled_plate_t6.json). The older solver remains available as `"one_way_quasistatic"`. Setting `thermoelastic_feedback` to `false` provides a dynamic **one-way** reference. Transient pure-Neumann thermal boundaries are permitted.
+The two-way formulation is selected with `analysis.thermoelastic_mode="coupled_dynamic"` and `thermal_mode="transient"`, together with a positive `time_step`, integer `steps`, and `initial_temperature`. The initial temperature can be a constant in K, or an affine field `{"type":"affine", "base":310.0,"gx":6.0,"gy":-3.0}` with gradients in K/m. The full example is [`examples/coupled_plate_t6.json`](examples/coupled_plate_t6.json). The older solver remains available as `"one_way_quasistatic"`. Setting `thermoelastic_feedback` to `false` provides a dynamic **one-way** reference. Transient pure-Neumann thermal boundaries are permitted.
 
 The **new** coupled formulation assumes linear small-strain plane stress, constant coefficients, and constant boundary data; initial mechanical displacement and velocity are zero. Its reference-temperature linearization and the reduced plane-stress heat-capacity requirement are explained in [Coupled Dynamics](docs/COUPLED_DYNAMICS.md). The coupled model requires a positive absolute `T_ref` in kelvin. Version 0.4 adds a separate high-accuracy method-of-lines ODE reference and an insulated energy/dissipation audit, described in [Independent Verification](docs/INDEPENDENT_VERIFICATION.md). Both checks use the same FE spatial matrices and are **not** an independently implemented FE solver, a recovered copy of the historical MATLAB model, or an externally validated machine-design calculation.
 
