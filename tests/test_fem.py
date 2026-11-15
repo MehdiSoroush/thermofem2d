@@ -19,7 +19,7 @@ def test_uniform_temperature_has_no_gradient(base_config):
     base_config["analysis"]["temperature_bc"]={x:350 for x in ("left","right","bottom","top","hole")}
     res=solve_model(base_config)
     assert np.max(abs(res.temperature-350))<1e-8
-    assert np.max(res.von_mises)<100
+    assert np.max(res.von_mises)<100  # Pa-scale roundoff versus ~1e11 Pa stiffness
 
 
 def test_free_thermal_expansion_patch(base_config):
@@ -35,6 +35,8 @@ def test_free_thermal_expansion_patch(base_config):
 
 def test_linear_steady_temperature_patch(base_config):
     base_config["analysis"]["temperature_bc"]={"left":380,"right":298}
+    # Hole boundary insulating: solution isn't globally linear because heat flux
+    # normal to hole would not vanish; verify heat balance and temperature bounds.
     s=solve_model(base_config)
     assert s.temperature.min()>=297.99999
     assert s.temperature.max()<=380.00001

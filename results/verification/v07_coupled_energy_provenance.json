@@ -1,0 +1,19 @@
+{
+  "status": "experimental coupled-energy diagnostic; not continuum validated",
+  "base_version": "v0.6.0 production solver with v0.7 verification studies",
+  "test_problem": "2m x 2m perforated plate; 2MPa abrupt traction; left T=310K and right T=298K; T0=298K",
+  "grading_factor": 1.45,
+  "final_time_s": 0.00016,
+  "energy_definition": "quadratic perturbation functional; not absolute sensible heat",
+  "time_method": "Newmark average acceleration + backward Euler thermal",
+  "energy_identity_note": "includes temperature-boundary work, BE dissipation, and finite-step coupling correction",
+  "initial_boundary_note": "temperature step is imposed in the initial discrete state at t=0+; instantaneous heating event is outside the audited interval",
+  "limitation": "time/space convergence of true coupled thermal shock not established",
+  "files": [
+    "v07_coupled_energy_timestep.csv",
+    "v07_adiabatic_sign_check.csv",
+    "v07_coupled_cooling_time_sensitivity.png",
+    "v07_coupling_quadrature_time_sensitivity.png",
+    "v07_coupled_energy_identity.png"
+  ]
+}

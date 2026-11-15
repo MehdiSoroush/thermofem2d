@@ -1,5 +1,21 @@
 # Change history
 
+## 0.7.0 — November 2026 (experimental thermal-shock verification)
+
+- Investigated abrupt versus smooth mechanical excitation and dynamic Q4/T6 mode and field convergence on perforated plates.
+- Added geometrically graded thermal-shock verification meshes, local semi-infinite analytical profiles and surface-flux comparisons.
+- Added an explicitly **lower-order** monotone heat-conduction reference with lumped capacity and graph diffusion, preserving pure-conduction bounds and discrete heat accounting; it does not replace quadratic T6 heat interpolation in the ordinary solver.
+- Added reciprocal thermoelastic energy-budget postprocessing and adiabatic strain-rate feedback sign checks; reported persistent numerical sensitivity of short-time coupled cooling.
+- Documented limitations of Q4–T6 cross-discretization agreement, numerical thermal diffusion, unresolved coupled-field convergence, and use for engineering design.
+- Extended automated tests and reproducible numerical datasets, with independent high-cost research refinements separated from the fast release regression suite.
+
+### Coupled-energy audit details
+
+- Added independent post-processing of mechanical kinetic energy, strain energy, quadratic thermal perturbation energy, thermal boundary reaction power, conductivity loss, backward-Euler numerical damping, and mixed-time coupling correction.
+- Added analytic adiabatic tensile-strain cooling sign benchmark and tests covering T3, T6 and independently assembled Q4 for both consistent and monotone thermal schemes.
+- Recorded 64-to-2048-step time refinements exposing severe discretization sensitivity of sub-reference temperatures despite closure of the discrete energy identity.
+- Retained the previous production solver API and numerical kernels; no claim of independently validated coupled thermal-shock design predictions.
+
 ## 0.6.0 — 13 November 2026 (continuum-manufactured coupled transient verification)
 
 - Added analytically derived strong-form coupled continuum body forces and heat sources for a smooth quadratic-in-space exact solution; implemented a dedicated all-boundary time-dependent Dirichlet verification harness for T3, T6 and independently assembled Q4.

@@ -1,7 +1,14 @@
-.venv/
 __pycache__/
-*.py[cod]
 .pytest_cache/
+*.pyc
+.venv/
+.env
 *.egg-info/
-build/
 dist/
+build/
+.DS_Store
+# Local verification and transfer artifacts (not repository materials)
+PRIVATE_*
+*_PRIVATE_*
+SHA256_MANIFEST.json
+*.zip
