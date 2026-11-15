@@ -1,0 +1,16 @@
+{
+  "scope": "experimental numerical diagnostic; not design validated",
+  "thermal_case": "pure conduction sudden 310 K left edge; 298 K right edge",
+  "absolute_reference_temperature_K": 298,
+  "final_time_s": 0.00016,
+  "thermal_mesh": "geometric radial grading; growth=1.45, 28 layers",
+  "monotone_T6_thermal": "P1 conforming four-subtriangle thermal operator on T6 nodes",
+  "coupled_T6": "T6 displacement/P1-subtriangle temperature; reciprocal P2/P1 coupling",
+  "limitation": "no fully independent continuum solution for coupled thermal shock",
+  "data_files": [
+    "v07_monotone_thermal_comparison.csv",
+    "v07_monotone_timestep_sensitivity.csv",
+    "v07_monotone_coupled_displacement.csv"
+  ],
+  "validation_status": "experimental; not independently design validated"
+}

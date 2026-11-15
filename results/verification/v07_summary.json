@@ -1,0 +1,29 @@
+{
+  "status": "verification study; independent external validation outstanding",
+  "model": "Small-strain linear plane-stress transient thermoelasticity",
+  "reference": "Independently assembled Q4 spatial FEM with matching Newmark/BE integrator",
+  "mesh_divisions": [
+    4,
+    6,
+    8,
+    12,
+    16
+  ],
+  "constant_top_traction_Pa": 2000000.0,
+  "final_time_s": 0.00016,
+  "spatial_comparison_steps": 64,
+  "thermal_initialization": {
+    "thermal_diffusivity_m2_s": 1.5257857796765334e-05,
+    "observation_time_s": 0.00016,
+    "sqrt_alpha_time_m": 4.940908061766029e-05,
+    "reference_outer_hole_ligament_m": 0.8200000000000001,
+    "radial_spacing_at_16_subdivisions_m": 0.051250000000000004,
+    "ratio_radial_spacing_to_diffusion_length_at_16": 1037.2587257104663
+  },
+  "limits": [
+    "No experimental or external commercial-FEM validation",
+    "Abrupt thermal boundary step is unresolved on available spatial meshes",
+    "The n=16 abrupt-load result requires additional temporal refinement",
+    "The preheated case compares incremental displacement about distinct equilibria"
+  ]
+}

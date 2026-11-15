@@ -28,6 +28,8 @@ def test_linear_harmonic_temperature_exact_on_offset_hole(base_config):
     boundary = _all_boundary_nodes(mesh)
     prescribed = {int(i): float(exact[i]) for i in boundary}
     computed = solve_dirichlet(K, np.zeros(len(exact)), prescribed)
+    # All boundaries are assigned their exact nodal temperature; this includes
+    # the hole, so its boundary is NOT assumed to be insulated in this test.
     assert np.max(abs(computed - exact)) < 1e-9
     flux = element_heat_flux(mesh, material, computed)
     expected = -material["conductivity"] * np.array([4, -7])

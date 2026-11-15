@@ -6,7 +6,7 @@
 
 **Parametric finite element analysis of a perforated plate under thermal loading**
 
-> **v0.6.0 — continuum-manufactured coupled transient verification, November 2026.** In addition to the sequential T3/T6 solver, the software includes **newly implemented two-way transient linear plane-stress thermoelasticity** with mechanical inertia and strain-rate thermal feedback. The original 2016 MATLAB numerical results have **not** been independently reproduced.
+> **v0.7.0 — experimental thermal-shock verification, November 2026.** This release adds independent dynamic-wave diagnostics, graded-mesh thermal boundary-layer studies, a separate monotone heat-conduction reference, and a discrete two-way thermoelastic energy audit. **Short-time coupled thermal-shock stresses and cooling excursions are not validated for engineering design.** The original 2016 MATLAB numerical results have not been independently reproduced.
 
 ![Six-panel computational overview: temperature, displacement, element-centroid von Mises stress, Fourier heat flux, T3 mesh and displayed deformed geometry](results/figures/overview.png)
 
@@ -15,6 +15,12 @@
 ThermoFEM-2D is a small, auditable Python finite-element research application. The source study was a **summer 1395 (2016) MATLAB coursework project**, concerned with classical coupled thermoelasticity of a square perforated plate using six-node quadratic triangular elements and three nodal unknowns (`u_x`, `u_y`, `theta`). The archival Persian-language manuscript is not distributed here.
 
 **The 2026 Python solver is an independently implemented continuation of the 2016 coursework.** Version 0.2 introduced verified straight-sided T6 elements; v0.3 added **dynamic mechanical inertia and two-way thermoelastic coupling**; v0.4 added **independent-in-time reference integration and energy-budget checks** for both T3 and T6; v0.5 adds an **independently assembled Q4 quadrilateral reference** for spatial comparisons; v0.6 adds a **continuum-manufactured exact coupled transient benchmark** and diagnoses the outstanding abruptly loaded T6–Q4 disagreement. The new plane-stress numerical method has been tested against algebraic and analytical limiting cases, but it is **not** a literal reconstruction of the incomplete historical matrices or results. See [coupled dynamics](docs/COUPLED_DYNAMICS.md), [source audit](docs/SOURCE_AUDIT.md), and [formulation](docs/FORMULATION.md).
+
+## Experimental v0.7 verification extensions
+
+Version 0.7 includes reproducible [dynamic-wave comparisons](docs/DYNAMIC_WAVE_VALIDATION.md), [graded-mesh thermal-shock benchmarks](docs/THERMAL_SHOCK_BOUNDARY_LAYER.md), a [monotone pure-conduction reference](docs/POSITIVITY_AND_THERMAL_CONSERVATION.md), and a [discrete coupled-energy audit](docs/COUPLED_ENERGY_BUDGET.md). These studies explain why a coarse transient Q4–T6 comparison exhibited large differences and quantify time-integration sensitivity. The monotone T6-node thermal reference uses **piecewise-linear subtriangles**; it is not a bound-preserving quadratic T6 method. The coupled energy ledger is an algebraic identity check, not a continuum accuracy certificate. The application CLI and Streamlit interface retain their existing capabilities; the new graded-mesh models are research verification modules rather than supported general-purpose configuration options.
+
+See the [v0.7.0 release notes](docs/RELEASE_NOTES_0.7.0.md) and [validation evidence and unresolved limitations](docs/VALIDATION_STATUS.md) before reusing numerical results.
 
 ## Current capabilities
 
@@ -105,7 +111,7 @@ The T6 implementation uses affine triangular geometry, polynomial quadratic Lagr
 
 The new [manufactured coupled benchmark](docs/MANUFACTURED_COUPLED.md) prescribes smooth quadratic exact displacement and temperature fields on a perforated geometry. Its **analytic continuum body force and heat-source terms** are derived independently of finite element matrices and include reciprocal thermal/strain-rate coupling. A second case adds **nonzero mechanical inertia**. T6 reproduces the chosen exactly representable fields to floating-point tolerance; T3/Q4 converge under refinement. Because the displacement/temperature boundary data vary in time, this is currently a dedicated **test harness**, not a claim that the ordinary GUI supports arbitrary time functions.
 
-The earlier **abrupt-load T6–Q4 discrepancy is not resolved**: static responses agree to about 1% or better at studied densities, but refining only the timestep does not remove the roughly 63–67% short-time dynamic displacement difference at coarse meshes. See the [diagnostic report](docs/MANUFACTURED_COUPLED.md). An external FEM wave-transient reference and a controlled smooth-ramp convergence study remain necessary.
+The earlier **63–67% abrupt-load T6–Q4 discrepancy** has been investigated in controlled v0.7 studies. It is strongly associated with a severely under-resolved thermal boundary layer; graded meshes reduce the cross-formulation difference to approximately 3.5–4.6% in tested cases. This is not a continuum error bound and does not establish mesh-independent coupled shock stresses or temperatures. See the [dynamic-wave analysis](docs/DYNAMIC_WAVE_VALIDATION.md) and [graded-mesh results](docs/THERMAL_SHOCK_BOUNDARY_LAYER.md).
 
 ## Verification status
 
