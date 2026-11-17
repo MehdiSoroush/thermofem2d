@@ -133,12 +133,13 @@ The automated tests include:
 - Manufactured quadratic heat equation with explicitly prescribed boundary temperatures and constant volumetric source: **RMS free-node error decreases by 37.9×** across six mesh levels (`results/verification/`).
 - Conflicting BC and invalid timestep errors; numerical postprocessing smoke tests.
 
-**Not yet verified:** external established-FEM benchmarking for the abrupt dynamic wave problem; original 2016 numerical outputs/matrices; curved-hole geometry; general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The two-way dynamics and structural inertia have internal tests and a continuum-manufactured exact-solution benchmark, but not independent engineering validation for arbitrary transient loads. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
+**Not yet verified:** external established-FEM benchmarking for the abrupt dynamic wave problem; original 2016 numerical outputs/matrices; thermal and mechanical field solutions on curved-hole meshes; general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The two-way dynamics and structural inertia have internal tests and a continuum-manufactured exact-solution benchmark, but not independent engineering validation for arbitrary transient loads. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
 
 ## Repository layout
 
 ```text
 src/thermofem2d/geometry.py   Parametric T3 mesh and conforming T6 conversion
+src/thermofem2d/circular_geometry.py  Circular-hole geometry-only T3/T6 mesh verification
 src/thermofem2d/element.py    Quadratic shape functions, Gauss quadrature, plotting subdivisions
 src/thermofem2d/fem.py        Physical element matrices and boundary assembly
 src/thermofem2d/solve.py      Sequential and coupled-mode dispatch
@@ -160,12 +161,13 @@ docs/                         Original-source audit, derivations, verification
 - **0.3 (complete):** New, plane-stress two-way coupled dynamic T3/T6 system and synthetic numerical tests; not historical MATLAB model replication.
 - **0.4 (complete):** Independent temporal ODE reference, energy balance and exploratory mesh sensitivity.
 - **0.5 (complete):** Independently assembled Q4 reference for a rectangular-hole plate and spatial cross-comparisons.
-- **0.6 (current):** Analytically forced coupled transient quadratic benchmark with nonzero-inertia variant and explicit Q4/T6 static versus abrupt-dynamic diagnostics; the abrupt-load difference remains open.
-- **0.7 (planned):** Controlled smooth-ramp wave-transient verification, then general hole shapes and selectable quadrilateral elements in the application.
+- **0.6 (complete):** Analytically forced coupled transient quadratic benchmark, including a nonzero-inertia variant and Q4/T6 diagnostic comparisons.
+- **0.7 (complete):** Mechanical wave studies, graded thermal-shock verification, a separate monotone thermal reference, and a discrete coupled-energy audit; short-time coupled thermal-shock predictions retain documented limitations.
+- **0.8 (in development):** Circular-hole T3 and curved T6 geometry verification, followed by curved-element thermal and mechanical assembly and independent stress-concentration validation.
 - **1.0:** Independently benchmarked dynamic coupling, richer initial/boundary conditions, numerical diagnostics, and reproducible technical reports.
 
 The scope of these releases is contingent on mathematical verification, not merely adding interface controls.
 
 ## Provenance, citation, and license
 
-Historical coursework: **2016 (1395)**. New Python software and numerical tests: **2026**. The new solver is not a literal translation of the original MATLAB appendix. Cite software results as *ThermoFEM-2D v0.6.0 (2026)* with the specific input configuration and numerical verification status. MIT License.
+Historical coursework: **2016 (1395)**. New Python software and numerical tests: **2026**. The new solver is not a literal translation of the original MATLAB appendix. Cite released solver results as *ThermoFEM-2D v0.7.0 (2026)* with the specific input configuration and numerical verification status. The unreleased circular-hole geometry utility should be identified by its commit when cited independently. MIT License.
