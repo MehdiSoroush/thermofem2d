@@ -22,6 +22,12 @@ Version 0.7 includes reproducible [dynamic-wave comparisons](docs/DYNAMIC_WAVE_V
 
 See the [v0.7.0 release notes](docs/RELEASE_NOTES_0.7.0.md) and [validation evidence and unresolved limitations](docs/VALIDATION_STATUS.md) before reusing numerical results.
 
+## Circular-hole geometry verification utility
+
+The experimental [`circular_geometry`](src/thermofem2d/circular_geometry.py) module generates conforming T3 polygonal and curved T6 isoparametric **geometry-only** meshes for a centred or eccentric circular opening. It includes geometric Jacobian sampling and independently reproducible plate-area and hole-perimeter convergence checks. The implementation and its validation are described in [circular-hole geometry](docs/CIRCULAR_GEOMETRY.md).
+
+**Scope restriction:** This geometry is not selectable in the current CLI or Streamlit solver. The existing thermal and mechanical assemblers retain straight-sided rectangular-hole support only. Geometric verification does not establish circular-hole stress or transient thermoelastic accuracy.
+
 ## Current capabilities
 
 - Rectangular plate with one **movable and resizable rectangular through-hole** (geometry-fitted mesh; all coordinates in metres).

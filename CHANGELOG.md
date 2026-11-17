@@ -1,5 +1,11 @@
 # Change history
 
+## Unreleased — circular-hole geometry verification
+
+- Added a standalone circular-hole geometry utility with eccentric-hole placement, T3 polygonal boundaries, and conforming quadratic T6 geometric edges.
+- Added sampled isoparametric-Jacobian checks, numerical area/perimeter integration, exact-geometric convergence datasets and figures, and dedicated regression tests.
+- Kept the new geometry separate from the existing thermal and mechanical solver interfaces; physical circular-hole analysis is not yet claimed.
+
 ## 0.7.0 — November 2026 (experimental thermal-shock verification)
 
 - Investigated abrupt versus smooth mechanical excitation and dynamic Q4/T6 mode and field convergence on perforated plates.
