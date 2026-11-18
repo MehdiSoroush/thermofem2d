@@ -8,8 +8,8 @@
   "elements": 240,
   "temperature_min_K": 297.93746449992364,
   "temperature_max_K": 310.0,
-  "max_displacement_m": 5.392231363686303e-05,
-  "max_element_centroid_von_mises_Pa": 10368608.144033758,
+  "max_displacement_m": 5.392231363686354e-05,
+  "max_element_centroid_von_mises_Pa": 10368608.14403404,
   "analysis_type": "two-way coupled transient plane-stress thermoelasticity",
   "validation_status": "analytical and manufactured-solution tests; original 2016 coupled outputs not recovered"
 }
