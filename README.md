@@ -22,11 +22,13 @@ Version 0.7 includes reproducible [dynamic-wave comparisons](docs/DYNAMIC_WAVE_V
 
 See the [v0.7.0 release notes](docs/RELEASE_NOTES_0.7.0.md) and [validation evidence and unresolved limitations](docs/VALIDATION_STATUS.md) before reusing numerical results.
 
-## Circular-hole geometry verification utility
+## Circular-hole geometry and curved-element verification
 
 The experimental [`circular_geometry`](src/thermofem2d/circular_geometry.py) module generates conforming T3 polygonal and curved T6 isoparametric **geometry-only** meshes for a centred or eccentric circular opening. It includes geometric Jacobian sampling and independently reproducible plate-area and hole-perimeter convergence checks. The implementation and its validation are described in [circular-hole geometry](docs/CIRCULAR_GEOMETRY.md).
 
-**Scope restriction:** This geometry is not selectable in the current CLI or Streamlit solver. The existing thermal and mechanical assemblers retain straight-sided rectangular-hole support only. Geometric verification does not establish circular-hole stress or transient thermoelastic accuracy.
+**Field-assembly extension:** The explicit [`circular_field_mesh`](src/thermofem2d/curved_field.py) adapter permits the standalone circular geometry to be used in the thermal conductivity/capacity, elastic stiffness, structural mass, and reciprocal coupling assembly functions. These functions account for curved T6 Jacobians and integrate loads along curved edges. Analytical steady-conduction and elastic patch checks are documented in [curved-field verification](docs/CURVED_FIELD_ASSEMBLY.md) and [the computed heat-convergence plot](results/verification/circular_curved_heat_convergence.png).
+
+**Scope restriction:** Circular geometry is not selectable in the normal CLI or Streamlit solver. Analytical verification of circular-hole stress concentration and curved transient coupled responses is pending; the present assembly benchmarks do not certify design stresses or arbitrary transient loads.
 
 ## Current capabilities
 
@@ -133,13 +135,14 @@ The automated tests include:
 - Manufactured quadratic heat equation with explicitly prescribed boundary temperatures and constant volumetric source: **RMS free-node error decreases by 37.9×** across six mesh levels (`results/verification/`).
 - Conflicting BC and invalid timestep errors; numerical postprocessing smoke tests.
 
-**Not yet verified:** external established-FEM benchmarking for the abrupt dynamic wave problem; original 2016 numerical outputs/matrices; thermal and mechanical field solutions on curved-hole meshes; general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The two-way dynamics and structural inertia have internal tests and a continuum-manufactured exact-solution benchmark, but not independent engineering validation for arbitrary transient loads. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
+**Not yet verified:** external established-FEM benchmarking for the abrupt dynamic wave problem; original 2016 numerical outputs/matrices; circular-hole stress concentration and coupled transient predictions (despite curved-field assembly patch tests); general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The two-way dynamics and structural inertia have internal tests and a continuum-manufactured exact-solution benchmark, but not independent engineering validation for arbitrary transient loads. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
 
 ## Repository layout
 
 ```text
 src/thermofem2d/geometry.py   Parametric T3 mesh and conforming T6 conversion
-src/thermofem2d/circular_geometry.py  Circular-hole geometry-only T3/T6 mesh verification
+src/thermofem2d/circular_geometry.py  Circular-hole T3/T6 geometric verification
+src/thermofem2d/curved_field.py  Explicit geometry-to-field-assembly adapter
 src/thermofem2d/element.py    Quadratic shape functions, Gauss quadrature, plotting subdivisions
 src/thermofem2d/fem.py        Physical element matrices and boundary assembly
 src/thermofem2d/solve.py      Sequential and coupled-mode dispatch
@@ -163,7 +166,7 @@ docs/                         Original-source audit, derivations, verification
 - **0.5 (complete):** Independently assembled Q4 reference for a rectangular-hole plate and spatial cross-comparisons.
 - **0.6 (complete):** Analytically forced coupled transient quadratic benchmark, including a nonzero-inertia variant and Q4/T6 diagnostic comparisons.
 - **0.7 (complete):** Mechanical wave studies, graded thermal-shock verification, a separate monotone thermal reference, and a discrete coupled-energy audit; short-time coupled thermal-shock predictions retain documented limitations.
-- **0.8 (in development):** Circular-hole T3 and curved T6 geometry verification, followed by curved-element thermal and mechanical assembly and independent stress-concentration validation.
+- **0.8 (in development):** Circular-hole T3 and curved T6 geometry and field-assembly verification; next: independent stress-concentration validation and supported application integration.
 - **1.0:** Independently benchmarked dynamic coupling, richer initial/boundary conditions, numerical diagnostics, and reproducible technical reports.
 
 The scope of these releases is contingent on mathematical verification, not merely adding interface controls.

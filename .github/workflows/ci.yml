@@ -20,6 +20,9 @@ jobs:
       - name: Validate release documentation and metadata
         run: python examples/scripts/check_release_integrity.py
       - run: python examples/scripts/verify_manufactured_coupled.py
+      - name: Verify circular-hole isoparametric assembly
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        run: python examples/scripts/verify_curved_fields.py
       - run: python -m thermofem2d.cli --config examples/steady_plate.json --out results
       - run: python -m thermofem2d.cli --config examples/coupled_plate_t6.json --out results-coupled
       - run: python -m thermofem2d.cli --config examples/steady_plate_t6.json --out results-t6

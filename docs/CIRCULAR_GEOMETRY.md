@@ -17,7 +17,7 @@ Four sectors connect the circular boundary to corresponding sides of the outer r
 
 The first-order T3 mesh represents the hole by straight chords. The quadratic T6 mesh uses a shared midside node on every edge. Hole-edge midside nodes are placed on the specified circle, producing nonaffine isoparametric geometric elements. Their curved quadratic edges approximate the circle but are not exact circular arcs.
 
-The geometry utility `thermofem2d.circular_geometry.make_circular_mesh()` returns a `CircularGeometry` object containing `coordinates`, `triangles`, `boundary_edges`, and `boundary_nodes`. This data type is deliberately distinct from the solver-ready rectangular `Mesh`; the existing `make_mesh()` API and its numerical analyses remain unchanged.
+The geometry utility `thermofem2d.circular_geometry.make_circular_mesh()` returns a `CircularGeometry` object containing `coordinates`, `triangles`, `boundary_edges`, and `boundary_nodes`. This data type is deliberately distinct from the solver-ready rectangular `Mesh`; the existing `make_mesh()` configuration API remains unchanged. A separate, explicitly validated conversion for curved field assembly is documented in [curved-element thermal and mechanical verification](CURVED_FIELD_ASSEMBLY.md).
 
 ## Geometric Jacobian and integration
 
@@ -73,4 +73,4 @@ Results are written to `results/verification/circular_geometry_convergence.csv` 
 
 ## Applicability and limitations
 
-This contribution is a **geometry-only implementation**. The production thermal, elastic, and coupled transient assemblers still use the established straight-sided element mapping and should not be applied to the new nonaffine geometry. The geometry utility does not accept or produce temperature, stress, or displacement results. Curved-element physical assembly requires separate verification of gradient transformations, volumetric terms, boundary loads, and coupling operators. Hole-edge stress concentration and thermal-shock behavior are not validated by this geometric benchmark.
+This module provides geometric data only and does not itself produce temperature, stress, or displacement results. The separately verified [`circular_field_mesh`](../src/thermofem2d/curved_field.py) adapter now enables isoparametric curved-element matrix assembly; the physical field benchmarks and their limitations are documented in [curved-field verification](CURVED_FIELD_ASSEMBLY.md). Circular geometry remains unavailable in the normal CLI/Streamlit model configuration. Hole-edge stress concentration and thermal-shock behavior are not established by the geometric benchmark.

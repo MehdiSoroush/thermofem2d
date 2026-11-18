@@ -16,7 +16,7 @@ import numpy as np
 from scipy.sparse import bmat, coo_matrix
 from scipy.sparse.linalg import spsolve, factorized
 
-from .element import TRIANGLE_QUADRATURE, element_type_for_mesh, shape_and_gradients, strain_displacement
+from .element import integration_rule, element_type_for_mesh, shape_and_gradients, strain_displacement
 from .fem import (
     _validate_material, assemble_thermal, assemble_elastic, boundary_load,
     prescribed_displacements, prescribed_temperature, plane_stress_matrix,
@@ -39,12 +39,13 @@ def assemble_inertia_coupling(mesh, mat: Mapping):
     md, gd = [], []
     mi, mj, gi, gj = [], [], [], []
     mass_density = mat["density"] * mat["thickness"]
+    rule=integration_rule(mesh)
     for conn in mesh.elements:
-        p = mesh.nodes[conn[:3]]
+        p = mesh.nodes[conn]
         k = len(conn)
         local_mass = np.zeros((2*k, 2*k))
         local_g = np.zeros((2*k, k))
-        for r, s, w in TRIANGLE_QUADRATURE:
+        for r, s, w in rule:
             N, dN, area = shape_and_gradients(p, kind, r, s)
             measure = mat["thickness"] * area * w
             scalar_mass = mass_density * area * w * np.outer(N, N)

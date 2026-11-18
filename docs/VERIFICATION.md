@@ -1,5 +1,7 @@
 # Numerical verification and known limitations — v0.5.0
 
+**Historical scope:** This document records the v0.5 verification baseline. The subsequently developed [curved isoparametric assembly](CURVED_FIELD_ASSEMBLY.md) is described and verified separately; the v0.5 validation gaps below refer to that earlier milestone.
+
 ## Current verification cases
 
 1. **Element orientation:** all T3 and T6 parent elements have positive area after orientation enforcement; boundary edges follow actual outer and inner faces.
