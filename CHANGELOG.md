@@ -1,10 +1,13 @@
 # Change history
 
-## Unreleased — circular-hole geometry verification
+## Unreleased — circular-hole geometry and isoparametric field verification
 
 - Added a standalone circular-hole geometry utility with eccentric-hole placement, T3 polygonal boundaries, and conforming quadratic T6 geometric edges.
 - Added sampled isoparametric-Jacobian checks, numerical area/perimeter integration, exact-geometric convergence datasets and figures, and dedicated regression tests.
-- Kept the new geometry separate from the existing thermal and mechanical solver interfaces; physical circular-hole analysis is not yet claimed.
+- Added an explicit circular geometry-to-field assembly adapter, curved T6 Jacobian and higher-order volume quadrature, and geometric-metric integration of quadratic boundary heat fluxes and tractions.
+- Extended thermal conductivity/capacity, plane-stress stiffness, consistent mechanical mass, thermal expansion/coupling, and centroid stress/heat-flux sampling to curved T6 elements, while retaining the affine discretization path for existing rectangular-hole models.
+- Verified harmonic steady conduction, elastic constant-strain and thermal-expansion patches, consistent thermal/structural mass, reciprocal coupling work, and curved-boundary load resultants; added reproducible tables and figures.
+- Kept the circular geometry separate from general CLI/Streamlit model dispatch. Circular-hole stress concentration and curved two-way transient accuracy remain outside the validated scope.
 
 ## 0.7.0 — November 2026 (experimental thermal-shock verification)
 

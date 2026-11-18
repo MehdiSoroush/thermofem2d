@@ -1,8 +1,8 @@
 """Geometric circular-hole T3/T6 meshes and independent area diagnostics.
 
-This module is a geometry-only utility. The production solver currently
-supports straight-sided elements and rectangular openings. Its affine
-matrices must not be applied to the nonaffine circular geometry.
+This module is a geometry-only utility. The general model configuration
+remains restricted to its established geometry options. Curved geometry can
+be used for verified matrix assembly only through the explicit field adapter.
 
 Coordinates are expressed in metres. T6 hole-edge nodes lie on the specified
 circle, but quadratic Lagrange edges approximate rather than represent exact

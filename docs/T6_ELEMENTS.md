@@ -5,6 +5,8 @@ finite-element implementation. This is **not** an exact reimplementation of the
 2016 report's fully coupled 18-component (`u_x`, `u_y`, `T` at six nodes)
 transient thermoelastic system.
 
+The descriptions below document the original **v0.2 affine-element baseline**. A separate [v0.8 isoparametric extension](CURVED_FIELD_ASSEMBLY.md) provides curved T6 geometry mapping and verified assembly operators for circular holes through an explicit adapter. Circular geometry is not yet available in the normal CLI.
+
 ## Geometry, connectivity and polynomial interpolation
 
 Each T6 triangle has three counter-clockwise vertices followed by shared
