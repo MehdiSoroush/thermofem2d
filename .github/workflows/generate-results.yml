@@ -38,6 +38,7 @@ jobs:
           python examples/scripts/verify_manufactured_coupled.py
           python examples/scripts/compare_elements.py
           python examples/scripts/verify_curved_fields.py
+          python examples/scripts/verify_kirsch.py
       - name: Commit generated results to main
         run: |
           git config user.name "github-actions[bot]"

@@ -7,7 +7,8 @@
 - Added an explicit circular geometry-to-field assembly adapter, curved T6 Jacobian and higher-order volume quadrature, and geometric-metric integration of quadratic boundary heat fluxes and tractions.
 - Extended thermal conductivity/capacity, plane-stress stiffness, consistent mechanical mass, thermal expansion/coupling, and centroid stress/heat-flux sampling to curved T6 elements, while retaining the affine discretization path for existing rectangular-hole models.
 - Verified harmonic steady conduction, elastic constant-strain and thermal-expansion patches, consistent thermal/structural mass, reciprocal coupling work, and curved-boundary load resultants; added reproducible tables and figures.
-- Kept the circular geometry separate from general CLI/Streamlit model dispatch. Circular-hole stress concentration and curved two-way transient accuracy remain outside the validated scope.
+- Added independent x-loaded Kirsch plane-stress displacement/stress formulas, one-sided hole-edge stress sampling for T3/T6, an analytical-exterior Dirichlet convergence study, and a separate finite-width uniform-traction comparison. Published raw stress and displacement error tables, angular plots, and gross/net normalized sampled stress factors. Continuous peak-stress certification, external cross-FEM validation, and curved two-way transient accuracy remain outside the verified scope.
+- Kept circular geometry separate from general CLI/Streamlit model dispatch.
 
 ## 0.7.0 — November 2026 (experimental thermal-shock verification)
 
