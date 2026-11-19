@@ -1,6 +1,6 @@
 # Change history
 
-## Unreleased — circular-hole geometry and isoparametric field verification
+## 0.8.0 — November 2026 (circular-hole and curved T6 research verification)
 
 - Added a standalone circular-hole geometry utility with eccentric-hole placement, T3 polygonal boundaries, and conforming quadratic T6 geometric edges.
 - Added sampled isoparametric-Jacobian checks, numerical area/perimeter integration, exact-geometric convergence datasets and figures, and dedicated regression tests.

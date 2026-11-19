@@ -6,7 +6,7 @@
 
 **Parametric finite element analysis of a perforated plate under thermal loading**
 
-> **v0.7.0 — experimental thermal-shock verification, November 2026.** This release adds independent dynamic-wave diagnostics, graded-mesh thermal boundary-layer studies, a separate monotone heat-conduction reference, and a discrete two-way thermoelastic energy audit. **Short-time coupled thermal-shock stresses and cooling excursions are not validated for engineering design.** The original 2016 MATLAB numerical results have not been independently reproduced.
+> **v0.8.0 release candidate — circular-hole and curved-element verification, November 2026.** This version adds circular-hole geometry, curved T6 isoparametric field assembly, and static analytical Kirsch/finite-width stress benchmarks. The regular CLI/Streamlit application still supports rectangular openings; circular-hole models remain dedicated research verification utilities. **Neither sampled peak stresses nor short-time coupled thermal-shock responses are certified engineering-design predictions.** The original 2016 MATLAB numerical results have not been independently reproduced.
 
 ![Six-panel computational overview: temperature, displacement, element-centroid von Mises stress, Fourier heat flux, T3 mesh and displayed deformed geometry](results/figures/overview.png)
 
@@ -15,6 +15,12 @@
 ThermoFEM-2D is a small, auditable Python finite-element research application. The source study was a **summer 1395 (2016) MATLAB coursework project**, concerned with classical coupled thermoelasticity of a square perforated plate using six-node quadratic triangular elements and three nodal unknowns (`u_x`, `u_y`, `theta`). The archival Persian-language manuscript is not distributed here.
 
 **The 2026 Python solver is an independently implemented continuation of the 2016 coursework.** Version 0.2 introduced verified straight-sided T6 elements; v0.3 added **dynamic mechanical inertia and two-way thermoelastic coupling**; v0.4 added **independent-in-time reference integration and energy-budget checks** for both T3 and T6; v0.5 adds an **independently assembled Q4 quadrilateral reference** for spatial comparisons; v0.6 adds a **continuum-manufactured exact coupled transient benchmark** and diagnoses the outstanding abruptly loaded T6–Q4 disagreement. The new plane-stress numerical method has been tested against algebraic and analytical limiting cases, but it is **not** a literal reconstruction of the incomplete historical matrices or results. See [coupled dynamics](docs/COUPLED_DYNAMICS.md), [source audit](docs/SOURCE_AUDIT.md), and [formulation](docs/FORMULATION.md).
+
+## v0.8 circular-hole and curved-field research extensions
+
+Version 0.8 extends the **verification modules**, not the ordinary model-configuration interface. A separate circular-hole mesh utility supports polygonal T3 and quadratically curved T6 geometry, with numerical area/perimeter and Jacobian checks. An explicit adapter provides curved T6 finite-element field assembly for steady thermal and linear plane-stress operators, consistent mass and reciprocal thermoelastic coupling terms. Analytical harmonic conduction and elastic patch tests assess these operators.
+
+The [Kirsch benchmark](docs/KIRSCH_STRESS_CONCENTRATION.md) compares unsmoothed, one-sided hole-edge stresses against an exact plane-stress solution under **analytically prescribed exterior displacements**. A second study applies uniform exterior tractions to finite-width plates; those sampled stress factors describe a different boundary-value problem and must not be equated with the infinite-plane value of three. See the [v0.8 release notes](docs/RELEASE_NOTES_0.8.0.md), [verification status](docs/VALIDATION_STATUS.md), and [reproducibility audit](docs/REPRODUCIBILITY_AUDIT_0.8.0.md) for evidence and limits.
 
 ## Experimental v0.7 verification extensions
 
@@ -65,6 +71,9 @@ python examples/scripts/compare_elements.py
 python examples/scripts/verify_coupled_convergence.py
 python examples/scripts/verify_q4_spatial.py
 python examples/scripts/verify_manufactured_coupled.py
+python examples/scripts/verify_curved_fields.py
+python examples/scripts/verify_kirsch.py
+python examples/scripts/check_release_integrity.py
 ```
 
 Optional graphical interface:
@@ -137,7 +146,7 @@ The automated tests include:
 - Manufactured quadratic heat equation with explicitly prescribed boundary temperatures and constant volumetric source: **RMS free-node error decreases by 37.9×** across six mesh levels (`results/verification/`).
 - Conflicting BC and invalid timestep errors; numerical postprocessing smoke tests.
 
-**Not yet verified:** external established-FEM benchmarking for the abrupt dynamic wave problem; original 2016 numerical outputs/matrices; circular-hole stress concentration and coupled transient predictions (despite curved-field assembly patch tests); general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The two-way dynamics and structural inertia have internal tests and a continuum-manufactured exact-solution benchmark, but not independent engineering validation for arbitrary transient loads. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
+**Not yet verified:** external established-FEM benchmarking for the abrupt dynamic wave problem; original 2016 numerical outputs/matrices; independent external-FEM benchmarking of static circular-hole stress factors and curved-hole coupled transient predictions (despite analytical static Kirsch and curved-field assembly checks); general time-varying boundary conditions; contact or nonlinear/temperature-dependent constitutive response. The two-way dynamics and structural inertia have internal tests and a continuum-manufactured exact-solution benchmark, but not independent engineering validation for arbitrary transient loads. Stress peaks near corners and constraints must be studied through mesh convergence; isolated element-centroid maxima are not certified as mesh-independent physical values. See [verification and limitations](docs/VERIFICATION.md).
 
 ## Repository layout
 
@@ -169,11 +178,11 @@ docs/                         Original-source audit, derivations, verification
 - **0.5 (complete):** Independently assembled Q4 reference for a rectangular-hole plate and spatial cross-comparisons.
 - **0.6 (complete):** Analytically forced coupled transient quadratic benchmark, including a nonzero-inertia variant and Q4/T6 diagnostic comparisons.
 - **0.7 (complete):** Mechanical wave studies, graded thermal-shock verification, a separate monotone thermal reference, and a discrete coupled-energy audit; short-time coupled thermal-shock predictions retain documented limitations.
-- **0.8 (in development):** Circular-hole geometry, curved T6 assembly, and analytical/finite-width circular-hole stress verification; continuous stress-peak certification, independent cross-solver comparison, and supported application integration remain future work.
+- **0.8 (implemented; release candidate):** Circular-hole geometry, curved T6 assembly, analytical-exterior Kirsch benchmarks, and finite-width sampled stress studies. Continuous stress-peak certification, independent cross-solver comparison, and application integration remain future work.
 - **1.0:** Independently benchmarked dynamic coupling, richer initial/boundary conditions, numerical diagnostics, and reproducible technical reports.
 
 The scope of these releases is contingent on mathematical verification, not merely adding interface controls.
 
 ## Provenance, citation, and license
 
-Historical coursework: **2016 (1395)**. New Python software and numerical tests: **2026**. The new solver is not a literal translation of the original MATLAB appendix. Cite released solver results as *ThermoFEM-2D v0.7.0 (2026)* with the specific input configuration and numerical verification status. The unreleased circular-hole geometry utility should be identified by its commit when cited independently. MIT License.
+Historical coursework: **2016 (1395)**. New Python software and numerical tests: **2026**. The new solver is not a literal translation of the original MATLAB appendix. Cite released results as *ThermoFEM-2D* with their exact release version, commit, input configuration, and verification status (the proposed v0.8.0 release must not be treated as published until it is tagged). Circular-hole results are research verification examples, not validated design allowables. MIT License.
