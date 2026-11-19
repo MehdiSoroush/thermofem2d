@@ -32,6 +32,12 @@ def check_release():
                 issues.append(f'{doc.relative_to(ROOT)}: missing {target}')
     pyproject = tomllib.loads((ROOT / 'pyproject.toml').read_text(encoding='utf-8'))
     version = pyproject['project']['version']
+    release_notes = ROOT / 'docs' / f'RELEASE_NOTES_{version}.md'
+    if not release_notes.is_file():
+        issues.append(f'missing release notes: {release_notes.relative_to(ROOT)}')
+    changelog = (ROOT / 'CHANGELOG.md').read_text(encoding='utf-8')
+    if not re.search(rf'^## v?{re.escape(version)}(?:\\s|$)', changelog, flags=re.MULTILINE):
+        issues.append(f'CHANGELOG.md: missing version heading {version}')
     package = (ROOT / 'src/thermofem2d/__init__.py').read_text(encoding='utf-8')
     citation = (ROOT / 'CITATION.cff').read_text(encoding='utf-8')
     readme = (ROOT / 'README.md').read_text(encoding='utf-8')
