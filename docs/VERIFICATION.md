@@ -166,3 +166,8 @@ does not replace an external spatial-FEM benchmark or historical replication.
 ## v0.5 Q4 spatial cross-comparison
 
 Version 0.5 introduces an independently constructed and assembled Q4 spatial-reference FEM with matching physical assumptions. Its analytical affine-field patch tests pass, and selected T3/T6–Q4 coupled simulations are compared at matching vertices. **The observed residual T6–Q4 displacement differences remain large**, so these data do not establish continuum spatial convergence or validate stress peaks. The separate reference Q4 element is not yet a user-selectable production element. Full details and reproducible outputs: [Q4 spatial reference](Q4_SPATIAL_REFERENCE.md).
+
+
+## Circular-hole stress verification (v0.8 research extension)
+
+[Kirsch benchmark](KIRSCH_STRESS_CONCENTRATION.md) independently verifies curved T6 stress response under an exact analytical outer-displacement boundary condition, separately from a uniformly traction-loaded finite plate. Hole-edge stresses are evaluated on one element side at the edge midpoint without smoothing; gross and net nominal stress definitions are explicit. The analytical problem converges towards the classical infinite-plane \(K_t=3\) result, whereas finite-width sampled factors differ. These results do not establish continuous mesh-independent peak stresses, matching external-solver accuracy, or validated curved-hole transient dynamics.
