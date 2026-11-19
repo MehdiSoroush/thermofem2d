@@ -36,7 +36,7 @@ def check_release():
     if not release_notes.is_file():
         issues.append(f'missing release notes: {release_notes.relative_to(ROOT)}')
     changelog = (ROOT / 'CHANGELOG.md').read_text(encoding='utf-8')
-    if not re.search(rf'^## v?{re.escape(version)}(?:\\s|$)', changelog, flags=re.MULTILINE):
+    if not any(line.startswith((f'## {version} ', f'## v{version} ')) for line in changelog.splitlines()):
         issues.append(f'CHANGELOG.md: missing version heading {version}')
     package = (ROOT / 'src/thermofem2d/__init__.py').read_text(encoding='utf-8')
     citation = (ROOT / 'CITATION.cff').read_text(encoding='utf-8')
