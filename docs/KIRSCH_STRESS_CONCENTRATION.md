@@ -2,7 +2,7 @@
 
 **Author:** Mehdi Soroush
 
-**Scope:** Static, small-strain isotropic plane-stress verification on circular-hole T3 and curved T6 meshes, within the unreleased v0.8 research extensions.
+**Scope:** Static, small-strain isotropic plane-stress verification on circular-hole T3 and curved T6 meshes, within the v0.8 research verification extensions.
 
 ## Verification questions
 
